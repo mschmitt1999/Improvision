@@ -117,27 +117,26 @@ class ScaleView {
     constructor(){
         this.initializeNoteColorMap();
         ScaleView.scalesSelectbox.onchange = function(){
-    
             ScaleView.scaleClass.setScaleNameString(this.value);
-            ScaleView.calculateScaleButton.click();
+            if(ScaleView.showScaleBoolean){
+                ScaleView.showScale();
+            }
         };
         
         ScaleView.notesSelectbox.onchange = function(){
             ScaleView.scaleClass.rootNoteKeyDouble = parseFloat(this.value);
-            ScaleView.calculateScaleButton.click();
+            if(ScaleView.showScaleBoolean){
+                ScaleView.showScale();
+            }
         };
         
         ScaleView.calculateScaleButton.addEventListener('click', function(){
             if(ScaleView.showScaleBoolean){
-                ScaleView.scaleTextView.innerText = '';
-                ScaleView.resetKeyboardNotes();
-                document.getElementById('showScaleLabel').innerText = 'Show Scale';
+                ScaleView.hideScale();
                 ScaleView.showScaleBoolean = false;
             }
             else{
-                ScaleView.scaleTextView.innerText = ScaleView.scaleClass.calculateScale();
-                ScaleView.highlightKeyboardNotes();
-                document.getElementById('showScaleLabel').innerText = 'Hide Scale';
+                ScaleView.showScale();
                 ScaleView.showScaleBoolean = true;
             }
 
@@ -153,6 +152,19 @@ class ScaleView {
             ScaleView.scalesSelectbox.value = ScaleView.scaleClass.getScaleNameString();
             ScaleView.notesSelectbox.value = ScaleView.scaleClass.rootNoteKeyDouble;
         })
+    }
+
+    static showScale(){
+        ScaleView.scaleTextView.innerText = ScaleView.scaleClass.calculateScale();
+        ScaleView.highlightKeyboardNotes();
+        document.getElementById('showScaleLabel').innerText = 'Hide Scale';
+        
+    }
+
+    static hideScale(){
+        ScaleView.scaleTextView.innerText = '';
+        ScaleView.resetKeyboardNotes();
+        document.getElementById('showScaleLabel').innerText = 'Show Scale';
     }
     
     static highlightKeyboardNotes(){
