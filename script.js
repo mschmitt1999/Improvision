@@ -188,13 +188,14 @@ class ScaleView {
             }
             else{
                 svgLabel.innerText = 'Keyboard';
+
                 if(ScaleView.showScaleBoolean){
                     if(ScaleView.showScaleBoolean){
                         ScaleView.highlightGuitarNotes();
                     }
-                    else{
-                        ScaleView.resetGuitarNotes();
-                    }
+                }
+                else{
+                    ScaleView.resetGuitarNotes();
                 }
             }
         } );
