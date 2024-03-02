@@ -155,19 +155,19 @@ class ScaleView {
         this.randomScaleButton.addEventListener('click', () => this.randomScaleButtonClick());
         this.swtichSVGButton.addEventListener('click', () => this.swtichSVGButtonClick());
         this.showOrHideScaleButton.addEventListener('click', () => this.showOrHideScaleButtonClick());
-        this.scalesSelectbox.onchange = () => this.scalesSelectboxOnchange;
+        this.scalesSelectbox.onchange = () => this.scalesSelectboxOnchange();
         this.notesSelectbox.onchange = () => this.notesSelectboxOnchange();
     }
 
     scalesSelectboxOnchange(){
-        this.scaleClass.setScaleNameString(this.value);
+        this.scaleClass.setScaleNameString(this.scalesSelectbox.value);
         if(this.showScaleBoolean){
             this.showScale();
         }   
     }
 
     notesSelectboxOnchange(){
-        this.scaleClass.rootNoteKeyDouble = parseFloat(this.value);
+        this.scaleClass.rootNoteKeyDouble = parseFloat(this.notesSelectbox.value);
         if(this.showScaleBoolean){
             this.showScale();
         }
