@@ -1,5 +1,5 @@
 class Scale {
-    static notesMap = new Map();
+    static allNotesMap = new Map();
     static scalesMap = new Map();
     rootNoteKeyDouble;
     scaleNameString;
@@ -13,18 +13,20 @@ class Scale {
     }
 
     static initializeNotesMap(){
-        Scale.notesMap.set(1.0, 'C');
-        Scale.notesMap.set(1.5, 'C#');
-        Scale.notesMap.set(2.0, 'D');
-        Scale.notesMap.set(2.5, 'D#');
-        Scale.notesMap.set(3.0, 'E');
-        Scale.notesMap.set(3.5, 'F');
-        Scale.notesMap.set(4.0, 'F#');
-        Scale.notesMap.set(4.5, 'G');
-        Scale.notesMap.set(5.0, 'G#');
-        Scale.notesMap.set(5.5, 'A');
-        Scale.notesMap.set(6.0, 'A#');
-        Scale.notesMap.set(6.5, 'H');
+        // Return map of: (key: double, value: String)
+        //Initialize @allNotesMap, that contains all notes as values with their represantative double...
+        Scale.allNotesMap.set(1.0, 'C');
+        Scale.allNotesMap.set(1.5, 'C#');
+        Scale.allNotesMap.set(2.0, 'D');
+        Scale.allNotesMap.set(2.5, 'D#');
+        Scale.allNotesMap.set(3.0, 'E');
+        Scale.allNotesMap.set(3.5, 'F');
+        Scale.allNotesMap.set(4.0, 'F#');
+        Scale.allNotesMap.set(4.5, 'G');
+        Scale.allNotesMap.set(5.0, 'G#');
+        Scale.allNotesMap.set(5.5, 'A');
+        Scale.allNotesMap.set(6.0, 'A#');
+        Scale.allNotesMap.set(6.5, 'H');
     }
     
     
@@ -41,15 +43,15 @@ class Scale {
     }
     
     calculateScale(){
-        let noteKeyDouble = this.rootNoteKeyDouble;
+        let noteKeyDouble = this.getRootNoteKeyDouble();
         let lenghtOfScale = Scale.scalesMap.get(this.scaleNameString).at(0);
         let halfSteps = Scale.scalesMap.get(this.scaleNameString).slice(1,lenghtOfScale);
         let scaleNotesString = '';
         this.scaleNotes = [];
         for (let i=0; i<lenghtOfScale; i++){
             if(!(this.scaleNameString=='DurPentatonik' && (i==3 || i==6)) && !(this.scaleNameString=='MolPentatonik' && (i==1 || i==5))){
-            scaleNotesString = scaleNotesString.concat(Scale.notesMap.get(noteKeyDouble),' | '); 
-            this.scaleNotes.push([noteKeyDouble, Scale.notesMap.get(noteKeyDouble)]);
+            scaleNotesString = scaleNotesString.concat(Scale.allNotesMap.get(noteKeyDouble),' | '); 
+            this.scaleNotes.push([noteKeyDouble, Scale.allNotesMap.get(noteKeyDouble)]);
             }
             if(halfSteps.includes(i)){
                     noteKeyDouble += 0.5;
@@ -66,7 +68,7 @@ class Scale {
 
     setAndCalculateRandomScale(){
         let scaleKeyArray = Array.from(Scale.scalesMap.keys());
-        let noteKeyArray = Array.from(Scale.notesMap.keys());
+        let noteKeyArray = Array.from(Scale.allNotesMap.keys());
         this.scaleNameString = scaleKeyArray.at(Math.floor(Math.random()*scaleKeyArray.length));
         this.rootNoteKeyDouble = noteKeyArray.at(Math.floor(Math.random() * noteKeyArray.length))
         return this.calculateScale();  
@@ -91,10 +93,10 @@ class Scale {
         this.scaleNotes = scaleNotes;
     }
     static getNotesMap() {
-        return Scale.notesMap;
+        return Scale.allNotesMap;
     }
     static setNotesMap(notesMap) {
-        Scale.notesMap = notesMap;
+        Scale.allNotesMap = notesMap;
     }
     static getScalesMap() {
         return Scale.scalesMap;
@@ -104,17 +106,30 @@ class Scale {
     }
 }
 
+
+
+
+
+
+
 class ScaleView {
-    static calculateScaleButton = document.getElementById('calculateScale');
+    static showOrHideScaleButton = document.getElementById('showOrHideScaleButton');
     randomScaleButton;
+    static swtichSVGButton = document.getElementById('switchSVG');
+    static isKeyboardSvgShown = true;
+
     static scalesSelectbox = document.getElementById('selectedScales');
     static notesSelectbox = document.getElementById('selectedNotes');
     static scaleTextView = document.getElementById('scaleTextView');
     static scaleClass = new Scale();
     static noteColorMap = new Map();
     static showScaleBoolean = false;
-    
+    static keyboardSVG = document.getElementById('keyboardSVG');
+    static guitarSVG = document.getElementById('guitarSVG');
+    static svgContainerDiv = document.getElementById('svg-container');
+
     constructor(){
+        ScaleView.showKeyboardSVG();
         this.initializeNoteColorMap();
         ScaleView.scalesSelectbox.onchange = function(){
             ScaleView.scaleClass.setScaleNameString(this.value);
@@ -130,7 +145,7 @@ class ScaleView {
             }
         };
         
-        ScaleView.calculateScaleButton.addEventListener('click', function(){
+        ScaleView.showOrHideScaleButton.addEventListener('click', function(){
             if(ScaleView.showScaleBoolean){
                 ScaleView.hideScale();
                 ScaleView.showScaleBoolean = false;
@@ -147,23 +162,66 @@ class ScaleView {
             let scaleString = ScaleView.scaleClass.setAndCalculateRandomScale();
             if(ScaleView.showScaleBoolean){
                 ScaleView.scaleTextView.innerText = scaleString;
-                ScaleView.highlightKeyboardNotes();
+                if(ScaleView.isKeyboardSvgShown){
+                    ScaleView.highlightKeyboardNotes();
+                }
+                else{
+                    ScaleView.highlightGuitarNotes();
+                }
             }
             ScaleView.scalesSelectbox.value = ScaleView.scaleClass.getScaleNameString();
             ScaleView.notesSelectbox.value = ScaleView.scaleClass.rootNoteKeyDouble;
         })
+
+        ScaleView.swtichSVGButton.addEventListener('click',function(){
+            ScaleView.swtichSVG();
+
+            let svgLabel= document.getElementById('switchSVGLabel');
+            if(ScaleView.isKeyboardSvgShown){
+                svgLabel.innerText ='Guitar';
+                if(ScaleView.showScaleBoolean){
+                    ScaleView.highlightKeyboardNotes();
+                }
+                else{
+                    ScaleView.resetKeyboardNotes();
+                }
+            }
+            else{
+                svgLabel.innerText = 'Keyboard';
+                if(ScaleView.showScaleBoolean){
+                    if(ScaleView.showScaleBoolean){
+                        ScaleView.highlightGuitarNotes();
+                    }
+                    else{
+                        ScaleView.resetGuitarNotes();
+                    }
+                }
+            }
+        } );
     }
 
     static showScale(){
+        ScaleView.showScaleBoolean = true;
         ScaleView.scaleTextView.innerText = ScaleView.scaleClass.calculateScale();
-        ScaleView.highlightKeyboardNotes();
+        if (ScaleView.isKeyboardSvgShown){
+            ScaleView.highlightKeyboardNotes();
+        }
+        else{
+            ScaleView.highlightGuitarNotes();
+        }
         document.getElementById('showScaleLabel').innerText = 'Hide Scale';
         
     }
 
     static hideScale(){
+        ScaleView.showScaleBoolean = false;
         ScaleView.scaleTextView.innerText = '';
-        ScaleView.resetKeyboardNotes();
+        if(ScaleView.isKeyboardSvgShown){
+            ScaleView.resetKeyboardNotes();
+        }
+        else{
+            ScaleView.resetGuitarNotes();
+        }
         document.getElementById('showScaleLabel').innerText = 'Show Scale';
     }
     
@@ -185,7 +243,7 @@ class ScaleView {
     }
 
     static resetKeyboardNotes(){
-        Scale.notesMap.forEach((eachNote, eachKey) => {
+        Scale.allNotesMap.forEach((eachNote, eachKey) => {
             let fill = '#ffffff';
             if([1.5, 2.5, 4, 5, 6].includes(eachKey)){
                 fill = '#000000';   
@@ -193,6 +251,48 @@ class ScaleView {
             document.getElementById(eachNote.concat("1")).style.fill = fill;
             document.getElementById(eachNote.concat("2")).style.fill = fill;
         });
+    }
+
+
+    static highlightGuitarNotes(){
+        ScaleView.resetGuitarNotes();
+
+        //Every guitarString has it's own start value
+        let guitarStringsMap = new Map();
+        guitarStringsMap.set('E', 3);
+        guitarStringsMap.set('A', 5.5);
+        guitarStringsMap.set('D', 2);
+        guitarStringsMap.set('G', 4.5);
+        guitarStringsMap.set('H', 6.5);
+        guitarStringsMap.set('e', 3);
+
+        let scaleNotesDoubles = [];
+        ScaleView.scaleClass.scaleNotes.forEach(eachNote => {
+            scaleNotesDoubles.push(eachNote[0]);
+        });
+        Array.from(guitarStringsMap.keys()).forEach(eachKey => {
+            for(let j=1; j<=5; j++){
+                let guitarStringDouble = guitarStringsMap.get(eachKey) + j*0.5;
+                if(guitarStringDouble > 6.5){
+                    guitarStringDouble = guitarStringDouble % 6.5 + 0.5;
+                }
+                if(scaleNotesDoubles.includes(guitarStringDouble)){
+                    document.getElementById(eachKey.concat(j.toString()).concat("Guitar")).style.visibility = "visible";
+                }
+            }
+        })
+
+    }
+
+    static resetGuitarNotes(){
+        let guitarStrings = ['E', 'A','D','G','H','e']
+
+        for(let i=0; i<guitarStrings.length; i++){
+            for(let j=1; j<=5; j++){
+                document.getElementById(guitarStrings[i].concat(j.toString()).concat("Guitar")).style.visibility = "hidden";
+            }
+        }
+        
     }
 
 
@@ -210,6 +310,26 @@ class ScaleView {
         ScaleView.noteColorMap.set('A#','#B57114');
         ScaleView.noteColorMap.set('H','#962B09');
       }
+
+    static showGuitarSVG(){
+       ScaleView.svgContainerDiv.removeChild(ScaleView.keyboardSVG);
+       ScaleView.svgContainerDiv.appendChild(ScaleView.guitarSVG);
+    }
+    static showKeyboardSVG(){
+        ScaleView.svgContainerDiv.removeChild(ScaleView.guitarSVG);
+        ScaleView.svgContainerDiv.appendChild(ScaleView.keyboardSVG);
+    }
+    
+    static swtichSVG(){
+        if(ScaleView.svgContainerDiv.firstElementChild == ScaleView.keyboardSVG){
+            ScaleView.showGuitarSVG();
+            ScaleView.isKeyboardSvgShown = false;
+        }
+        else{
+            ScaleView.showKeyboardSVG();
+            ScaleView.isKeyboardSvgShown = true;
+        }
+    }
 }
 
 
