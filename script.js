@@ -63,10 +63,9 @@ class Scale {
         this.setScaleNotes([]);
 
         for (let i=0; i<this.getLength(); i++){
-            if(!(this.getScaleNameString()=='DurPentatonik' && (i==3 || i==6)) && !(this.getScaleNameString()=='MolPentatonik' && (i==1 || i==5))){
-                scaleNotesString = scaleNotesString.concat(Scale.getAllNotesMap().get(noteKeyDouble),' | '); 
-                this.getScaleNotes().push([noteKeyDouble, Scale.getAllNotesMap().get(noteKeyDouble)]);
-            }
+            scaleNotesString = scaleNotesString.concat(Scale.getAllNotesMap().get(noteKeyDouble),' | '); 
+            this.getScaleNotes().push([noteKeyDouble, Scale.getAllNotesMap().get(noteKeyDouble)]);
+            
             if(this.getHalfSteps().includes(i)){
                 noteKeyDouble += 0.5;
             }
@@ -77,8 +76,22 @@ class Scale {
                 noteKeyDouble -= this.getLength()-1;
             }
         }
-       
-        return this.calculateScaleString();
+       //if(!(this.getScaleNameString()=='DurPentatonik' && (i==3 || i==6)) && !(this.getScaleNameString()=='MolPentatonik' && (i==1 || i==5))){
+
+        return this.getScaleNameString().includes('Pentatonik') ?  this.calculatePentatonicScaleString() : this.calculateScaleString();
+    }
+
+    calculatePentatonicScaleString(){
+        this.scaleNotesString = this.calculateScaleString();
+        if(this.getScaleNameString()=='DurPentatonik'){
+            this.getScaleNotes().splice(6,1);
+            this.getScaleNotes().splice(3,1);
+        }
+        else if(this.getScaleNameString()=='MolPentatonik'){
+            this.getScaleNotes().splice(5,1);
+            this.getScaleNotes().splice(1,1);
+        }
+        return this.scaleNotesString
     }
 
     calculateScaleString(){
@@ -100,34 +113,33 @@ class Scale {
             ['A#', 6.0],
             ['H', 6.5]]);
 
-        let notes = this.getScaleNotes().slice();
-        let startingIndex = (this.getScaleNotes()[0][1].length == 1) ? notesOrder.indexOf(this.getScaleNotes()[0][1]) : notesOrder.indexOf(this.getScaleNotes()[0][1][0]);
-        if(this.getScaleNameString().includes('Pentatonik')){
-            notesOrder.splice((startingIndex + 6) % 7, 1);
-            notesOrder.splice((startingIndex + 3) % 7, 1);
-        }
-        for (let i = 0; i < notes.length; i++){
-                let note = notes[i][1];
-                let noteSuffix = '';
-                let index = (startingIndex + i) % notesOrder.length ;
-                if(note[0] != notesOrder[index]){
-                    if(note[0] == 'C' && notesOrder[index][0] == 'H'){
-                        notes[i][0] = 7;
-                    }
-                    difference = notes[i][0] - allNotesMapSwapped.get(notesOrder[index]);
-                    note = notesOrder[index];
-                    while(difference != 0){
-                        if(difference > 0){
-                            noteSuffix += '#';
-                            difference -= 0.5;
+            let startingIndex = (this.getScaleNotes()[0][1].length == 1) ? notesOrder.indexOf(this.getScaleNotes()[0][1]) : notesOrder.indexOf(this.getScaleNotes()[0][1][0]);
+        
+        for (let i = 0; i < this.getScaleNotes().length; i++){
+                if(!(this.getScaleNameString()=='DurPentatonik' && (i==3 || i==6)) && !(this.getScaleNameString()=='MolPentatonik' && (i==1 || i==5))){
+
+                    let note = this.getScaleNotes()[i][1];
+                    let noteSuffix = '';
+                    let index = (startingIndex + i) % notesOrder.length ;
+                    if(note[0] != notesOrder[index]){
+                        if(note[0] == 'C' && notesOrder[index][0] == 'H'){
+                            this.getScaleNotes()[i][0] = 7;
                         }
-                        else{
-                            noteSuffix += 'b';
-                            difference += 0.5;
+                        difference = this.getScaleNotes()[i][0] - allNotesMapSwapped.get(notesOrder[index]);
+                        note = notesOrder[index];
+                        while(difference != 0){
+                            if(difference > 0){
+                                noteSuffix += '#';
+                                difference -= 0.5;
+                            }
+                            else{
+                                noteSuffix += 'b';
+                                difference += 0.5;
+                            }
                         }
                     }
+                    notesString += note +noteSuffix+ ' | ';
                 }
-                notesString += note +noteSuffix+ ' | ' 
         }
             
         return notesString;
@@ -147,11 +159,16 @@ class Scale {
     setRootNoteKeyDouble(rootNoteKeyDouble) {
         this.rootNoteKeyDouble = rootNoteKeyDouble;
     }
+
     getScaleNameString() {
         return this.scaleNameString;
     }
+    setScaleNameString(aScaleNameString){
+        this.scaleNameString = aScaleNameString;
+    }
+
     setScale(scaleNameString) {
-        this.scaleNameString = scaleNameString;
+        this.setScaleNameString(scaleNameString);
         this.setScaleMap(Scale.getAllScaleMaps().get(this.getScaleNameString()));
         this.setLength(this.getScaleMap().at(0));
         this.setHalfSteps(this.getScaleMap().slice(1,this.getLength()));
