@@ -744,6 +744,7 @@
 
     <div>
         <select id="selectedNotes" name="notes">
+         <!--Hier Enharmonische Verwechslung integrieren-->
             <option value="1">C</option>
             <option value="1.5">C#</option>
             <option value="2">D</option>
@@ -759,17 +760,17 @@
         </select>
 
         <select id="selectedScales" name="scales">
-            <!--<option>Ionisch</option>
-            <option>Dorisch</option>
-            <option>Phrygisch</option>
-            <option>Lydisch</option>
-            <option>Mixolydisch</option>
-            <option>Äolisch</option>
-            <option>Lokrisch</option> -->
             <option>Dur</option>
             <option>Mol</option>
             <option value="DurPentatonik">Dur Pentatonik</option>
             <option value="MolPentatonik">Mol Pentatonik</option>
+            <option class="modesOptionInvisible">Ionisch</option>
+            <option class="modesOptionInvisible">Dorisch</option>
+            <option class="modesOptionInvisible">Phrygisch</option>
+            <option class="modesOptionInvisible">Lydisch</option>
+            <option class="modesOptionInvisible">Mixolydisch</option>
+            <option class="modesOptionInvisible">Äolisch</option>
+            <option class="modesOptionInvisible">Lokrisch</option>
         </select>
 
 
@@ -780,6 +781,7 @@
       <button id="showOrHideScaleButton"><label id="showScaleLabel">Show Scale</label></button>
       <button id="randomScale"><label id="randomScaleLabel">Random Scale</label></button>
       <button id="switchSVG"><label id="switchSVGLabel">Guitar</label></button>
+      <button id="modesButton"><label id="modes">Activate Modes</label></button>
     </div>
 
     <script src="script.js"></script>    

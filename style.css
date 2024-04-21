@@ -294,3 +294,13 @@ select {
         margin-top: 30px;
     }
 }
+
+
+
+.modesOptionInvisible{
+    display: none;
+}
+
+.modesOptionVisible{
+    background-color: green;
+}
