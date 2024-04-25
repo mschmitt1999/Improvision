@@ -2,7 +2,7 @@ class Scale {
     static allNotesMap;
     static allScaleMaps;
     static modesMap;
-    scaleMap;
+    static standardScaleMaps;
     length;
     halfSteps;
     scaleNotesString;
@@ -12,8 +12,9 @@ class Scale {
     
     constructor(scaleString, rootNoteKeyDouble){
         Scale.initializeNotesMap();
-        Scale.initializeAllScaleMaps();
         Scale.initializeModesMap();
+        Scale.initializeStandardScaleMaps();
+        Scale.initializeAllScaleMaps();
         this.setScale('Dur');
         this.setRootNoteKeyDouble(1.0);
     }
@@ -39,6 +40,7 @@ class Scale {
     
     
     static initializeAllScaleMaps(){
+        //Redundanter Code
         Scale.setAllScaleMaps(new Map([
             ['DurPentatonik', [7, 2, 6]], //False Length 7 should be 5 
             ['MolPentatonik', [7, 1, 4]],
@@ -52,6 +54,13 @@ class Scale {
             ['Äolisch', [7, 1, 4]],
             ['Lokrisch', [7, 0, 3]]
         ]));
+    }
+    static initializeStandardScaleMaps(){
+        Scale.standardScaleMaps = new Map([ 
+            ['DurPentatonik', [7, 2, 6]],
+            ['MolPentatonik', [7, 1, 4]],
+            ['Dur', [7, 2, 6]],
+            ['Mol', [7, 1, 4]]]);
     }
 
     static initializeModesMap(){
@@ -89,18 +98,22 @@ class Scale {
 
     calculatePentatonicScaleString(){
         this.scaleNotesString = this.calculateScaleString();
+        let withOutNotesAtPositionArray;
         if(this.getScaleNameString()=='DurPentatonik'){
-            this.getScaleNotes().splice(6,1);
-            this.getScaleNotes().splice(3,1);
+            withOutNotesAtPositionArray = [6,3];
         }
         else if(this.getScaleNameString()=='MolPentatonik'){
-            this.getScaleNotes().splice(5,1);
-            this.getScaleNotes().splice(1,1);
+            withOutNotesAtPositionArray = [5, 1]
+ 
         }
+        this.getScaleNotes().splice(withOutNotesAtPositionArray[0],1);
+        this.getScaleNotes().splice(withOutNotesAtPositionArray[1],1); 
         return this.scaleNotesString
     }
 
     calculateScaleString(){
+
+        //sollte einen Array von Strings raus geben welche später gewandelt werden im ScaleView 
         
        let notesString = '';
         let notesOrder = ['C','D','E','F','G','A','H'];
@@ -119,7 +132,7 @@ class Scale {
             ['A#', 6.0],
             ['H', 6.5]]);
 
-            let startingIndex = (this.getScaleNotes()[0][1].length == 1) ? notesOrder.indexOf(this.getScaleNotes()[0][1]) : notesOrder.indexOf(this.getScaleNotes()[0][1][0]);
+        let startingIndex = (this.getScaleNotes()[0][1].length == 1) ? notesOrder.indexOf(this.getScaleNotes()[0][1]) : notesOrder.indexOf(this.getScaleNotes()[0][1][0]);
         
         for (let i = 0; i < this.getScaleNotes().length; i++){
                 if(!(this.getScaleNameString()=='DurPentatonik' && (i==3 || i==6)) && !(this.getScaleNameString()=='MolPentatonik' && (i==1 || i==5))){
@@ -151,8 +164,8 @@ class Scale {
         return notesString;
     }
 
-    setAndCalculateRandomScale(){
-        let scaleKeyArray = Array.from(Scale.allScaleMaps.keys());
+    setAndCalculateRandomScale(aAreModesActivatedBoolean){
+        let scaleKeyArray = aAreModesActivatedBoolean ? Array.from(Scale.modesMap.keys()) : Array.from(Scale.standardScaleMaps.keys()) ;
         let noteKeyArray = Array.from(Scale.allNotesMap.keys());
         this.setScale(scaleKeyArray.at(Math.floor(Math.random()*scaleKeyArray.length)));
         this.setRootNoteKeyDouble(noteKeyArray.at(Math.floor(Math.random() * noteKeyArray.length)));
@@ -173,24 +186,17 @@ class Scale {
         this.scaleNameString = aScaleNameString;
     }
 
-    setScale(scaleNameString) {
-        this.setScaleNameString(scaleNameString);
-        this.setScaleMap(Scale.getAllScaleMaps().get(this.getScaleNameString()));
-        this.setLength(this.getScaleMap().at(0));
-        this.setHalfSteps(this.getScaleMap().slice(1,this.getLength()));
+    setScale(aScaleNameString) {
+        this.setScaleNameString(aScaleNameString);
+        let scaleMap = Scale.getAllScaleMaps().get(aScaleNameString);
+        this.setLength(scaleMap.at(0));
+        this.setHalfSteps(scaleMap.slice(1,this.getLength()));
     }
     getScaleNotes() {
         return this.scaleNotes;
     }
     setScaleNotes(scaleNotes) {
         this.scaleNotes = scaleNotes;
-    }
-
-    getScaleMap() {
-        return this.scaleMap;
-    }
-    setScaleMap(aMap) {
-        this.scaleMap = aMap;
     }
 
     getLength() {
@@ -337,7 +343,8 @@ class ScaleView {
     }
 
     randomScaleButtonClick(){
-        let scaleString = this.scaleClass.setAndCalculateRandomScale();
+        
+        let scaleString =this.scaleClass.setAndCalculateRandomScale(  this.modesButton.innerText == 'Deactivate Modes' );
         if(this.showScaleBoolean){
             this.scaleTextView.innerText = scaleString;
             if(this.isKeyboardSvgShown){
@@ -402,6 +409,11 @@ class ScaleView {
         document.getElementById('showScaleLabel').innerText = 'Show Scale';
     }
     
+    highlightStringNotes(){
+        let scaleNotesString = this.scaleClass.calculateScale();
+    }
+
+
     highlightKeyboardNotes(){
         // Braucht eine andere Datenstruktur?
         this.resetKeyboardNotes();
