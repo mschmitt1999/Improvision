@@ -111,11 +111,9 @@ class Scale {
         return this.scaleNotesString
     }
 
-    calculateScaleString(){
-
-        //sollte einen Array von Strings raus geben welche später gewandelt werden im ScaleView 
-        
+    calculateScaleString(){        
        let notesString = '';
+       let noteStringArray = [];
         let notesOrder = ['C','D','E','F','G','A','H'];
         let difference;
         let allNotesMapSwapped = new Map([ 
@@ -138,13 +136,14 @@ class Scale {
                 if(!(this.getScaleNameString()=='DurPentatonik' && (i==3 || i==6)) && !(this.getScaleNameString()=='MolPentatonik' && (i==1 || i==5))){
 
                     let note = this.getScaleNotes()[i][1];
+                    let noteDouble = this.getScaleNotes()[i][0];
                     let noteSuffix = '';
-                    let index = (startingIndex + i) % notesOrder.length ;
+                    let index = (startingIndex + i) % notesOrder.length;
                     if(note[0] != notesOrder[index]){
                         if(note[0] == 'C' && notesOrder[index][0] == 'H'){
-                            this.getScaleNotes()[i][0] = 7;
+                            noteDouble = 7;
                         }
-                        difference = this.getScaleNotes()[i][0] - allNotesMapSwapped.get(notesOrder[index]);
+                        difference = noteDouble - allNotesMapSwapped.get(notesOrder[index]);
                         note = notesOrder[index];
                         while(difference != 0){
                             if(difference > 0){
@@ -157,11 +156,11 @@ class Scale {
                             }
                         }
                     }
-                    notesString += note +noteSuffix+ ' | ';
+                    noteStringArray.push(note + noteSuffix);
                 }
         }
             
-        return notesString;
+        return noteStringArray;
     }
 
     setAndCalculateRandomScale(aAreModesActivatedBoolean){
@@ -346,7 +345,7 @@ class ScaleView {
         
         let scaleString =this.scaleClass.setAndCalculateRandomScale(  this.modesButton.innerText == 'Deactivate Modes' );
         if(this.showScaleBoolean){
-            this.scaleTextView.innerText = scaleString;
+            this.showScale();
             if(this.isKeyboardSvgShown){
                 this.highlightKeyboardNotes();
             }
@@ -386,7 +385,23 @@ class ScaleView {
 
     showScale(){
         this.showScaleBoolean = true;
-        this.scaleTextView.innerText = this.scaleClass.calculateScale();
+
+        let i = 0;
+        //Ugly aber später
+        this.scaleTextView.innerText = '';
+        let scaleStringArray = this.scaleClass.calculateScale();
+        this.scaleClass.scaleNotes.forEach(scaleNote => {
+            let noteSpan = document.createElement('span');
+            noteSpan.innerText = scaleStringArray[i];
+            noteSpan.style.backgroundColor = this.noteColorMap.get(scaleNote[1]);
+            noteSpan.style.color = '#000000';
+            noteSpan.style.margin = '5px';
+            noteSpan.style.padding= '5px';
+            this.scaleTextView.appendChild(noteSpan);
+            i++;
+        });
+        //
+
         if (this.isKeyboardSvgShown){
             this.highlightKeyboardNotes();
         }
@@ -424,10 +439,10 @@ class ScaleView {
         this.scaleClass.scaleNotes.forEach(eachNote => {
             //c1 - h2 H=6.5 c1=1 d1<c1
            if(rootNoteKeyDouble <= eachNote[0]){
-            document.getElementById(eachNote[1].concat("1")).style.fill = '#21BF75';//this.noteColorMap.get(eachNote);
+            document.getElementById(eachNote[1].concat("1")).style.fill = /*'#21BF75';*/this.noteColorMap.get(eachNote[1]);
            }
            else{
-            document.getElementById(eachNote[1].concat("2")).style.fill = '#21BF75';//this.noteColorMap.get(eachNote);
+            document.getElementById(eachNote[1].concat("2")).style.fill = /*'#21BF75';*/this.noteColorMap.get(eachNote[1]);
            }
         });
     }
@@ -538,8 +553,8 @@ class ScaleView {
         this.noteColorMap.set('D','#A2F2E4');
         this.noteColorMap.set('D#','#F2B705');
         this.noteColorMap.set('E','#F28705');
-        this.noteColorMap.set('F','#014040');
-        this.noteColorMap.set('F#','#1BA673');
+        this.noteColorMap.set('F','#B967FF');
+        this.noteColorMap.set('F#','#FF71CE');
         this.noteColorMap.set('G','#21BF75');
         this.noteColorMap.set('G#','#F2EFBB');
         this.noteColorMap.set('A','#F29991');
