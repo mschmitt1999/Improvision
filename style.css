@@ -49,8 +49,10 @@ h1 {
     padding: 20px;
     background-color: #333333;
     border: 2px solid #dcdcdc;
+    width: 75mm ;
     border-radius: 20px;
     margin-top: 30px;
+    text-align: center;
 }
 
 button {
@@ -158,7 +160,12 @@ select {
 #svg-container {
     display: flex;
     justify-content: center;
-    margin-top: 30px;
+    margin: 20px;
+    width: auto;
+}
+
+#keyboardSVG{
+    scale: 1.5;
 }
 
 /* Media Query for Mobile */

@@ -25,16 +25,23 @@ class Scale {
         Scale.setAllNotesMap(new Map([ 
             [1.0, 'C'],
             [1.5, 'C#'],
+            [15, 'Db'],
             [2.0, 'D'],
             [2.5, 'D#'],
+            [25, 'Eb'],
             [3.0, 'E'],
+            [30, 'Fb'],
             [3.5, 'F'],
             [4.0, 'F#'],
+            [40, 'Gb'],
             [4.5, 'G'],
             [5.0, 'G#'],
+            [50, 'Ab'],
             [5.5, 'A'],
             [6.0, 'A#'],
-            [6.5, 'H']
+            [60, 'Hb'],
+            [6.5, 'H'],
+            [65, 'Cb']
         ]));
     }
     
@@ -81,6 +88,10 @@ class Scale {
         for (let i=0; i<this.getLength(); i++){
 
             this.getScaleNotes().push([noteKeyDouble, Scale.getAllNotesMap().get(noteKeyDouble)]);
+
+            if(noteKeyDouble > 7){
+                noteKeyDouble /= 10;
+            }
             
             if(this.getHalfSteps().includes(i)){
                 noteKeyDouble += 0.5;
@@ -119,16 +130,24 @@ class Scale {
         let allNotesMapSwapped = new Map([ 
             ['C', 1.0],
             ['C#', 1.5],
+            ['Db', 1.5],
             ['D', 2.0],
             ['D#', 2.5],
+            ['Eb', 2.5],
             ['E', 3.0],
+            ['Fb', 3.0],
             ['F', 3.5],
             ['F#', 4.0],
+            ['Gb', 4.0],
             ['G', 4.5],
             ['G#', 5.0],
+            ['Ab', 5.0],
             ['A', 5.5],
             ['A#', 6.0],
-            ['H', 6.5]]);
+            ['Hb', 6.0],
+            ['H', 6.5],
+            ['Cb', 6.5],
+        ]);
 
         let startingIndex = (this.getScaleNotes()[0][1].length == 1) ? notesOrder.indexOf(this.getScaleNotes()[0][1]) : notesOrder.indexOf(this.getScaleNotes()[0][1][0]);
         
@@ -143,6 +162,9 @@ class Scale {
                         if(note[0] == 'C' && notesOrder[index][0] == 'H'){
                             noteDouble = 7;
                         }
+                    else if( note[0] == 'H' && notesOrder[index][0] == 'C'){
+                            noteDouble = 0.5;
+                    }
                         difference = noteDouble - allNotesMapSwapped.get(notesOrder[index]);
                         note = notesOrder[index];
                         while(difference != 0){
@@ -159,7 +181,10 @@ class Scale {
                     noteStringArray.push(note + noteSuffix);
                 }
         }
-            
+        if(this.getRootNoteKeyDouble() > 10){
+            let tempRootNoteKeyDouble = this.getRootNoteKeyDouble()/10;
+            this.scaleNotes[0] = [tempRootNoteKeyDouble, Scale.getAllNotesMap().get(tempRootNoteKeyDouble)];
+        }
         return noteStringArray;
     }
 
@@ -325,13 +350,13 @@ class ScaleView {
                     this.scalesSelectbox.options[i].classList.add('modesOptionVisible');
                     this.scalesSelectbox.options[i].classList.remove('modesOptionInvisible');
                     this.scalesSelectbox.value = 'Ionisch';
-                    this.modesButton.innerText = 'Deactivate Modes'
+                    this.modesButton.innerText = 'Hide Modes'
                }
                else{
                     this.scalesSelectbox.options[i].classList.add('modesOptionInvisible');
                     this.scalesSelectbox.options[i].classList.remove('modesOptionVisible');
                     this.scalesSelectbox.value = 'Dur';
-                    this.modesButton.innerText = 'Activate Modes';
+                    this.modesButton.innerText = 'Show Modes';
                }
                this.scalesSelectboxOnchange();
                if(this.showScaleBoolean){
@@ -453,8 +478,11 @@ class ScaleView {
             if([1.5, 2.5, 4, 5, 6].includes(eachKey)){
                 fill = '#000000';   
             }
-            document.getElementById(eachNote.concat("1")).style.fill = fill;
-            document.getElementById(eachNote.concat("2")).style.fill = fill;
+            //dirty fix
+            if(document.getElementById(eachNote.concat("1")) != null && document.getElementById(eachNote.concat("2")) != null){
+                document.getElementById(eachNote.concat("1")).style.fill = fill;
+                document.getElementById(eachNote.concat("2")).style.fill = fill;
+            }
         });
     }
 
@@ -550,16 +578,25 @@ class ScaleView {
     initializeNoteColorMap(){
         this.noteColorMap.set('C','#F26B8F');
         this.noteColorMap.set('C#','#F1A7F2');
+        this.noteColorMap.set('Db','#F1A7F2');
         this.noteColorMap.set('D','#A2F2E4');
         this.noteColorMap.set('D#','#F2B705');
+        this.noteColorMap.set('Eb','#F2B705');
         this.noteColorMap.set('E','#F28705');
+        //e# fehlt
+        this.noteColorMap.set('Fb','#B967FF');
         this.noteColorMap.set('F','#B967FF');
         this.noteColorMap.set('F#','#FF71CE');
+        this.noteColorMap.set('Gb','#FF71CE');
         this.noteColorMap.set('G','#21BF75');
         this.noteColorMap.set('G#','#F2EFBB');
+        this.noteColorMap.set('Ab','#F2EFBB');
         this.noteColorMap.set('A','#F29991');
         this.noteColorMap.set('A#','#B57114');
+        this.noteColorMap.set('Hb','#B57114');
         this.noteColorMap.set('H','#962B09');
+        this.noteColorMap.set('Cb','#962B09');
+
       }
 }
 
