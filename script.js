@@ -31,6 +31,7 @@ class Scale {
             [25, 'Eb'],
             [3.0, 'E'],
             [30, 'Fb'],
+            [35, 'E#'],
             [3.5, 'F'],
             [4.0, 'F#'],
             [40, 'Gb'],
@@ -162,9 +163,12 @@ class Scale {
                         if(note[0] == 'C' && notesOrder[index][0] == 'H'){
                             noteDouble = 7;
                         }
-                    else if( note[0] == 'H' && notesOrder[index][0] == 'C'){
+                        else if( note[0] == 'H' && notesOrder[index][0] == 'C'){
                             noteDouble = 0.5;
-                    }
+                        }
+                        else if(notesOrder[index][0] == 'C'){
+                            noteDouble = 0.5;
+                        }
                         difference = noteDouble - allNotesMapSwapped.get(notesOrder[index]);
                         note = notesOrder[index];
                         while(difference != 0){
@@ -189,7 +193,7 @@ class Scale {
     }
 
     setAndCalculateRandomScale(aAreModesActivatedBoolean){
-        let scaleKeyArray = aAreModesActivatedBoolean ? Array.from(Scale.modesMap.keys()) : Array.from(Scale.standardScaleMaps.keys()) ;
+        let scaleKeyArray = aAreModesActivatedBoolean ? Array.from(Scale.allScaleMaps.keys()) : Array.from(Scale.standardScaleMaps.keys()) ;
         let noteKeyArray = Array.from(Scale.allNotesMap.keys());
         this.setScale(scaleKeyArray.at(Math.floor(Math.random()*scaleKeyArray.length)));
         this.setRootNoteKeyDouble(noteKeyArray.at(Math.floor(Math.random() * noteKeyArray.length)));
@@ -368,7 +372,7 @@ class ScaleView {
 
     randomScaleButtonClick(){
         
-        let scaleString =this.scaleClass.setAndCalculateRandomScale(  this.modesButton.innerText == 'Deactivate Modes' );
+        let scaleString =this.scaleClass.setAndCalculateRandomScale(  this.modesButton.innerText == 'Hide Modes' );
         if(this.showScaleBoolean){
             this.showScale();
             if(this.isKeyboardSvgShown){
