@@ -1,28 +1,17 @@
 class Scale {
-    static allNotesMap;
-    static allScaleMaps;
-    static modesMap;
-    static standardScaleMaps;
-    length;
+    static ALL_NOTES_MAP;
+    static ALL_NOTES_MAPS_SWAPPED;
+    static ALL_SCALES_MAP;
+    static STANDARD_SCALE_MAP;
+    static NOTES_ORDER_ARRAY;
+    lengthOfScale;
     halfSteps;
-    scaleNotesString;
     rootNoteKeyDouble;
     scaleNameString;
     scaleNotes = [];    
     
     constructor(scaleString, rootNoteKeyDouble){
-        Scale.initializeNotesMap();
-        Scale.initializeModesMap();
-        Scale.initializeStandardScaleMaps();
-        Scale.initializeAllScaleMaps();
-        this.setScale('Dur');
-        this.setRootNoteKeyDouble(1.0);
-    }
-
-    static initializeNotesMap(){
-        // Return map of: (key: double, value: String)
-        //Initialize @allNotesMap, that contains all notes as values with their represantative double...
-        Scale.setAllNotesMap(new Map([ 
+        Scale.ALL_NOTES_MAP = new Map([ 
             [1.0, 'C'],
             [1.5, 'C#'],
             [15, 'Db'],
@@ -43,92 +32,9 @@ class Scale {
             [60, 'Hb'],
             [6.5, 'H'],
             [65, 'Cb']
-        ]));
-    }
-    
-    
-    static initializeAllScaleMaps(){
-        //Redundanter Code
-        Scale.setAllScaleMaps(new Map([
-            ['DurPentatonik', [7, 2, 6]], //False Length 7 should be 5 
-            ['MolPentatonik', [7, 1, 4]],
-            ['Dur', [7, 2, 6]],
-            ['Mol', [7, 1, 4]],
-            ['Ionisch', [7, 2, 6]],
-            ['Dorisch', [7, 1, 5]],
-            ['Phrygisch', [7, 0, 4]],
-            ['Lydisch', [7, 3, 7]],
-            ['Mixolydisch', [7, 2, 5]],
-            ['Äolisch', [7, 1, 4]],
-            ['Lokrisch', [7, 0, 3]]
-        ]));
-    }
-    static initializeStandardScaleMaps(){
-        Scale.standardScaleMaps = new Map([ 
-            ['DurPentatonik', [7, 2, 6]],
-            ['MolPentatonik', [7, 1, 4]],
-            ['Dur', [7, 2, 6]],
-            ['Mol', [7, 1, 4]]]);
-    }
+        ]);
 
-    static initializeModesMap(){
-        Scale.setModesMap(new Map([ ['Ionisch', [7, 2, 6]],
-        ['Dorisch', [7, 1, 5]],
-        ['Phrygisch', [7, 0, 4]],
-        ['Lydisch', [7, 3, 7]],
-        ['Mixolydisch', [7, 2, 5]],
-        ['Äolisch', [7, 1, 4]],
-        ['Lokrisch', [7, 0, 3]]]));
-    }
-    
-    calculateScale(){
-        let noteKeyDouble = this.getRootNoteKeyDouble();
-        this.setScaleNotesString('');
-        this.setScaleNotes([]);
-
-        for (let i=0; i<this.getLength(); i++){
-
-            this.getScaleNotes().push([noteKeyDouble, Scale.getAllNotesMap().get(noteKeyDouble)]);
-
-            if(noteKeyDouble > 7){
-                noteKeyDouble /= 10;
-            }
-            
-            if(this.getHalfSteps().includes(i)){
-                noteKeyDouble += 0.5;
-            }
-            else{
-                noteKeyDouble +=1.0;
-            }
-            if(noteKeyDouble >= this.getLength()){
-                noteKeyDouble %= this.getLength();
-                noteKeyDouble ++;
-            }
-        }
-        return this.getScaleNameString().includes('Pentatonik') ?  this.calculatePentatonicScaleString() : this.calculateScaleString();
-    }
-
-    calculatePentatonicScaleString(){
-        this.scaleNotesString = this.calculateScaleString();
-        let withOutNotesAtPositionArray;
-        if(this.getScaleNameString()=='DurPentatonik'){
-            withOutNotesAtPositionArray = [6,3];
-        }
-        else if(this.getScaleNameString()=='MolPentatonik'){
-            withOutNotesAtPositionArray = [5, 1]
- 
-        }
-        this.getScaleNotes().splice(withOutNotesAtPositionArray[0],1);
-        this.getScaleNotes().splice(withOutNotesAtPositionArray[1],1); 
-        return this.scaleNotesString
-    }
-
-    calculateScaleString(){        
-       let notesString = '';
-       let noteStringArray = [];
-        let notesOrder = ['C','D','E','F','G','A','H'];
-        let difference;
-        let allNotesMapSwapped = new Map([ 
+        Scale.ALL_NOTES_MAPS_SWAPPED = new Map([ 
             ['C', 1.0],
             ['C#', 1.5],
             ['Db', 1.5],
@@ -150,7 +56,65 @@ class Scale {
             ['Cb', 6.5],
         ]);
 
-        let startingIndex = (this.getScaleNotes()[0][1].length == 1) ? notesOrder.indexOf(this.getScaleNotes()[0][1]) : notesOrder.indexOf(this.getScaleNotes()[0][1][0]);
+        Scale.ALL_SCALES_MAP = new Map([
+            ['DurPentatonik', [7, 2, 6]], //False lengthOfScale 7 should be 5 
+            ['MolPentatonik', [7, 1, 4]],
+            ['Dur', [7, 2, 6]],
+            ['Mol', [7, 1, 4]],
+            ['Ionisch', [7, 2, 6]],
+            ['Dorisch', [7, 1, 5]],
+            ['Phrygisch', [7, 0, 4]],
+            ['Lydisch', [7, 3, 7]],
+            ['Mixolydisch', [7, 2, 5]],
+            ['Äolisch', [7, 1, 4]],
+            ['Lokrisch', [7, 0, 3]]
+        ]);
+
+        Scale.NOTES_ORDER_ARRAY = ['C','D','E','F','G','A','H'];
+
+        Scale.STANDARD_SCALE_MAP = new Map([ 
+            ['DurPentatonik', [7, 2, 6]],
+            ['MolPentatonik', [7, 1, 4]],
+            ['Dur', [7, 2, 6]],
+            ['Mol', [7, 1, 4]]]);
+
+        
+        this.setScale(scaleString);
+        this.setRootNoteKeyDouble(rootNoteKeyDouble);
+    }
+   
+    calculateScale(){   
+        //
+        let noteKeyDouble = this.getRootNoteKeyDouble();
+        this.setScaleNotes([]);
+
+        for (let i=0; i<this.getLengthOfScale(); i++){
+
+            this.getScaleNotes().push([noteKeyDouble, Scale.getALL_NOTES_MAP().get(noteKeyDouble)]);
+
+            if(noteKeyDouble > 7){
+                noteKeyDouble /= 10;
+            }
+            
+            if(this.getHalfSteps().includes(i)){
+                noteKeyDouble += 0.5;
+            }
+            else{
+                noteKeyDouble +=1.0;
+            }
+
+            if(noteKeyDouble >= this.getLengthOfScale()){
+                noteKeyDouble %= this.getLengthOfScale();
+                noteKeyDouble ++;
+            }
+        }
+        //
+        
+       let notesString = '';
+       let noteStringArray = [];
+       let difference;
+
+        let startingIndex = (this.getScaleNotes()[0][1].length == 1) ? Scale.NOTES_ORDER_ARRAY.indexOf(this.getScaleNotes()[0][1]) : Scale.NOTES_ORDER_ARRAY.indexOf(this.getScaleNotes()[0][1][0]);
         
         for (let i = 0; i < this.getScaleNotes().length; i++){
                 if(!(this.getScaleNameString()=='DurPentatonik' && (i==3 || i==6)) && !(this.getScaleNameString()=='MolPentatonik' && (i==1 || i==5))){
@@ -158,19 +122,19 @@ class Scale {
                     let note = this.getScaleNotes()[i][1];
                     let noteDouble = this.getScaleNotes()[i][0];
                     let noteSuffix = '';
-                    let index = (startingIndex + i) % notesOrder.length;
-                    if(note[0] != notesOrder[index]){
-                        if(note[0] == 'C' && notesOrder[index][0] == 'H'){
+                    let index = (startingIndex + i) % Scale.NOTES_ORDER_ARRAY.length;
+                    if(note[0] != Scale.NOTES_ORDER_ARRAY[index]){
+                        if(note[0] == 'C' && Scale.NOTES_ORDER_ARRAY[index][0] == 'H'){
                             noteDouble = 7;
                         }
-                        else if( note[0] == 'H' && notesOrder[index][0] == 'C'){
+                        else if( note[0] == 'H' && Scale.NOTES_ORDER_ARRAY[index][0] == 'C'){
                             noteDouble = 0.5;
                         }
-                        else if(notesOrder[index][0] == 'C'){
+                        else if(Scale.NOTES_ORDER_ARRAY[index][0] == 'C'){
                             noteDouble = 0.5;
                         }
-                        difference = noteDouble - allNotesMapSwapped.get(notesOrder[index]);
-                        note = notesOrder[index];
+                        difference = noteDouble - Scale.ALL_NOTES_MAPS_SWAPPED.get(Scale.NOTES_ORDER_ARRAY[index]);
+                        note = Scale.NOTES_ORDER_ARRAY[index];
                         while(difference != 0){
                             if(difference > 0){
                                 noteSuffix += '#';
@@ -187,18 +151,39 @@ class Scale {
         }
         if(this.getRootNoteKeyDouble() > 10){
             let tempRootNoteKeyDouble = this.getRootNoteKeyDouble()/10;
-            this.scaleNotes[0] = [tempRootNoteKeyDouble, Scale.getAllNotesMap().get(tempRootNoteKeyDouble)];
+            this.scaleNotes[0] = [tempRootNoteKeyDouble, Scale.getALL_NOTES_MAP().get(tempRootNoteKeyDouble)];
         }
+
+        //Pentatonic
+        if(this.getScaleNameString().includes('Pentatonik')){
+            let withOutNotesAtPositionArray;
+            if(this.getScaleNameString()=='DurPentatonik'){
+                withOutNotesAtPositionArray = [6,3];
+            }
+            else if(this.getScaleNameString()=='MolPentatonik'){
+                withOutNotesAtPositionArray = [5, 1]
+           }
+            this.getScaleNotes().splice(withOutNotesAtPositionArray[0],1);
+            this.getScaleNotes().splice(withOutNotesAtPositionArray[1],1); 
+        }
+
         return noteStringArray;
     }
 
+
     setAndCalculateRandomScale(aAreModesActivatedBoolean){
-        let scaleKeyArray = aAreModesActivatedBoolean ? Array.from(Scale.allScaleMaps.keys()) : Array.from(Scale.standardScaleMaps.keys()) ;
-        let noteKeyArray = Array.from(Scale.allNotesMap.keys());
+        let scaleKeyArray = aAreModesActivatedBoolean ? Array.from(Scale.ALL_SCALES_MAP.keys()) : Array.from(Scale.STANDARD_SCALE_MAP.keys()) ;
+        let noteKeyArray = Array.from(Scale.ALL_NOTES_MAP.keys());
         this.setScale(scaleKeyArray.at(Math.floor(Math.random()*scaleKeyArray.length)));
         this.setRootNoteKeyDouble(noteKeyArray.at(Math.floor(Math.random() * noteKeyArray.length)));
         return this.calculateScale();  
     }
+
+    getChordMatchingToNote(aNote){
+
+    }
+
+
 
     getRootNoteKeyDouble() {
         return this.rootNoteKeyDouble;
@@ -216,9 +201,9 @@ class Scale {
 
     setScale(aScaleNameString) {
         this.setScaleNameString(aScaleNameString);
-        let scaleMap = Scale.getAllScaleMaps().get(aScaleNameString);
-        this.setLength(scaleMap.at(0));
-        this.setHalfSteps(scaleMap.slice(1,this.getLength()));
+        let scaleMap = Scale.getALL_SCALES_MAP().get(aScaleNameString);
+        this.setLengthOfScale(scaleMap.at(0));
+        this.setHalfSteps(scaleMap.slice(1,this.getLengthOfScale()));
     }
     getScaleNotes() {
         return this.scaleNotes;
@@ -227,11 +212,11 @@ class Scale {
         this.scaleNotes = scaleNotes;
     }
 
-    getLength() {
-        return this.length;
+    getLengthOfScale() {
+        return this.lengthOfScale;
     }
-    setLength(anInteger) {
-        this.length = anInteger;
+    setLengthOfScale(anInteger) {
+        this.lengthOfScale = anInteger;
     }
 
     getHalfSteps() {
@@ -241,32 +226,14 @@ class Scale {
         this.halfSteps = anArray;
     }
 
-    getScaleNotesString() {
-        return this.scaleNotesString;
+    static getALL_NOTES_MAP() {
+        return Scale.ALL_NOTES_MAP;
     }
-    setScaleNotesString(aString) {
-        this.scaleNotesString = aString;
+    static setALL_NOTES_MAP(notesMap) {
+        Scale.ALL_NOTES_MAP = notesMap;
     }
-
-    static getAllNotesMap() {
-        return Scale.allNotesMap;
-    }
-    static setAllNotesMap(notesMap) {
-        Scale.allNotesMap = notesMap;
-    }
-    static getAllScaleMaps() {
-        return Scale.allScaleMaps;
-    }
-    static setAllScaleMaps(allScaleMaps) {
-        Scale.allScaleMaps = allScaleMaps;
-    }
-
-    static getModesMap(){
-        return Scale.modesMap;
-    }
-
-    static setModesMap(modesMap){
-        Scale.modesMap = modesMap;
+    static getALL_SCALES_MAP() {
+        return Scale.ALL_SCALES_MAP;
     }
 }
 
@@ -301,7 +268,7 @@ class ScaleView {
         this.svgContainerDiv = document.getElementById('svg-container');
         this.modesButton = document.getElementById('modesButton');
         this.isKeyboardSvgShown = true;
-        this.scaleClass = new Scale();
+        this.scaleClass = new Scale('Dur', 1);
         this.noteColorMap = new Map();
         this.showScaleBoolean = false;
     
@@ -477,7 +444,7 @@ class ScaleView {
     }
 
     resetKeyboardNotes(){
-        Scale.allNotesMap.forEach((eachNote, eachKey) => {
+        Scale.ALL_NOTES_MAP.forEach((eachNote, eachKey) => {
             let fill = '#ffffff';
             if([1.5, 2.5, 4, 5, 6].includes(eachKey)){
                 fill = '#000000';   
@@ -537,7 +504,7 @@ class ScaleView {
                 if(scaleNotesDoubles.includes(guitarStringDouble)){
                     let guitarNote = document.getElementById(eachKey.concat(j.toString()).concat("Guitar"));
                     guitarNote.style.visibility = "visible";
-                    guitarNote.style.fill = this.noteColorMap.get(Scale.allNotesMap.get(guitarStringDouble));
+                    guitarNote.style.fill = this.noteColorMap.get(Scale.ALL_NOTES_MAP.get(guitarStringDouble));
                 }
             }
         })
