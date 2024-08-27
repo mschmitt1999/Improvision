@@ -1,6 +1,6 @@
 class Scale {
     static ALL_NOTES_MAP;
-    static ALL_NOTES_MAPS_SWAPPED;
+    static ALL_NOTES_MAP_SWAPPED;
     static ALL_SCALES_MAP;
     static STANDARD_SCALE_MAP;
     static NOTES_ORDER_ARRAY;
@@ -34,7 +34,7 @@ class Scale {
             [65, 'Cb']
         ]);
 
-        Scale.ALL_NOTES_MAPS_SWAPPED = new Map([
+        Scale.ALL_NOTES_MAP_SWAPPED = new Map([
             ['C', 1.0],
             ['C#', 1.5],
             ['Db', 1.5],
@@ -133,7 +133,7 @@ class Scale {
                     else if (Scale.NOTES_ORDER_ARRAY[index][0] == 'C') {
                         noteDouble = 0.5;
                     }
-                    difference = noteDouble - Scale.ALL_NOTES_MAPS_SWAPPED.get(Scale.NOTES_ORDER_ARRAY[index]);
+                    difference = noteDouble - Scale.ALL_NOTES_MAP_SWAPPED.get(Scale.NOTES_ORDER_ARRAY[index]);
                     note = Scale.NOTES_ORDER_ARRAY[index];
                     while (difference != 0) {
                         if (difference > 0) {
@@ -493,6 +493,10 @@ class ScaleView {
             scaleNotesDoubles.push(eachNote[0]);
         });
         Array.from(guitarStringsMap.keys()).forEach(eachKey => {
+            let eachKeyDouble = Scale.ALL_NOTES_MAP_SWAPPED.get(eachKey.toUpperCase());
+            if(scaleNotesDoubles.includes(eachKeyDouble)){
+                document.getElementById("textOpenString".concat(eachKey)).style.fill = this.noteColorMap.get(Scale.ALL_NOTES_MAP.get(eachKeyDouble));
+            }
             for (let j = 1; j <= 5; j++) {
                 let guitarStringDouble = guitarStringsMap.get(eachKey) + j * 0.5;
                 if (guitarStringDouble > 6.5) {
@@ -513,6 +517,7 @@ class ScaleView {
         for (let i = 0; i < guitarStrings.length; i++) {
             for (let j = 1; j <= 5; j++) {
                 document.getElementById(guitarStrings[i].concat(j.toString()).concat("Guitar")).style.visibility = "hidden";
+                document.getElementById("textOpenString".concat(guitarStrings[i])).style.fill = "#000000";
             }
         }
     }
