@@ -485,7 +485,7 @@ class ScaleView {
         guitarStringsMap.set('A', 5.5 + this.guitarFretBoardPosition * 0.5);
         guitarStringsMap.set('D', 2 + this.guitarFretBoardPosition * 0.5);
         guitarStringsMap.set('G', 4.5 + this.guitarFretBoardPosition * 0.5);
-        guitarStringsMap.set('H', 6.5 + this.guitarFretBoardPosition * 0.5);
+        guitarStringsMap.set('B', 6.5 + this.guitarFretBoardPosition * 0.5);
         guitarStringsMap.set('e', 3 + this.guitarFretBoardPosition * 0.5);
 
         let scaleNotesDoubles = [];
@@ -508,7 +508,7 @@ class ScaleView {
     }
 
     resetGuitarNotes() {
-        let guitarStrings = ['E', 'A', 'D', 'G', 'H', 'e']
+        let guitarStrings = ['E', 'A', 'D', 'G', 'B', 'e']
 
         for (let i = 0; i < guitarStrings.length; i++) {
             for (let j = 1; j <= 5; j++) {
