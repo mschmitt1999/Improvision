@@ -8,10 +8,10 @@ class Scale {
     halfSteps;
     rootNoteKeyDouble;
     scaleNameString;
-    scaleNotes = [];    
-    
-    constructor(scaleString, rootNoteKeyDouble){
-        Scale.ALL_NOTES_MAP = new Map([ 
+    scaleNotes = [];
+
+    constructor(scaleString, rootNoteKeyDouble) {
+        Scale.ALL_NOTES_MAP = new Map([
             [1.0, 'C'],
             [1.5, 'C#'],
             [15, 'Db'],
@@ -29,12 +29,12 @@ class Scale {
             [50, 'Ab'],
             [5.5, 'A'],
             [6.0, 'A#'],
-            [60, 'Hb'],
-            [6.5, 'H'],
+            [60, 'Bb'],
+            [6.5, 'B'],
             [65, 'Cb']
         ]);
 
-        Scale.ALL_NOTES_MAPS_SWAPPED = new Map([ 
+        Scale.ALL_NOTES_MAPS_SWAPPED = new Map([
             ['C', 1.0],
             ['C#', 1.5],
             ['Db', 1.5],
@@ -51,135 +51,135 @@ class Scale {
             ['Ab', 5.0],
             ['A', 5.5],
             ['A#', 6.0],
-            ['Hb', 6.0],
-            ['H', 6.5],
+            ['Bb', 6.0],
+            ['B', 6.5],
             ['Cb', 6.5],
         ]);
-
+        
         Scale.ALL_SCALES_MAP = new Map([
-            ['DurPentatonik', [7, 2, 6]], //False lengthOfScale 7 should be 5 
-            ['MolPentatonik', [7, 1, 4]],
-            ['Dur', [7, 2, 6]],
-            ['Mol', [7, 1, 4]],
-            ['Ionisch', [7, 2, 6]],
-            ['Dorisch', [7, 1, 5]],
-            ['Phrygisch', [7, 0, 4]],
-            ['Lydisch', [7, 3, 7]],
-            ['Mixolydisch', [7, 2, 5]],
-            ['Äolisch', [7, 1, 4]],
-            ['Lokrisch', [7, 0, 3]]
+            ['MajorPentatonic', [7, 2, 6]], //False lengthOfScale 7 should be 5 
+            ['MinorPentatonic', [7, 1, 4]],
+            ['Major', [7, 2, 6]],
+            ['Minor', [7, 1, 4]],
+            ['Ioanian', [7, 2, 6]],
+            ['Dorian', [7, 1, 5]],
+            ['Phrygian', [7, 0, 4]],
+            ['Lydian', [7, 3, 7]],
+            ['Mixolydian', [7, 2, 5]],
+            ['Aeolian', [7, 1, 4]],
+            ['Locrian', [7, 0, 3]]
         ]);
 
-        Scale.NOTES_ORDER_ARRAY = ['C','D','E','F','G','A','H'];
+        Scale.NOTES_ORDER_ARRAY = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
 
-        Scale.STANDARD_SCALE_MAP = new Map([ 
-            ['DurPentatonik', [7, 2, 6]],
-            ['MolPentatonik', [7, 1, 4]],
-            ['Dur', [7, 2, 6]],
-            ['Mol', [7, 1, 4]]]);
+        Scale.STANDARD_SCALE_MAP = new Map([
+            ['MajorPentatonic', [7, 2, 6]],
+            ['MinorPentatonic', [7, 1, 4]],
+            ['Major', [7, 2, 6]],
+            ['Minor', [7, 1, 4]]]);
 
-        
+
         this.setScale(scaleString);
         this.setRootNoteKeyDouble(rootNoteKeyDouble);
     }
-   
-    calculateScale(){   
+
+    calculateScale() {
         //
         let noteKeyDouble = this.getRootNoteKeyDouble();
         this.setScaleNotes([]);
 
-        for (let i=0; i<this.getLengthOfScale(); i++){
+        for (let i = 0; i < this.getLengthOfScale(); i++) {
 
             this.getScaleNotes().push([noteKeyDouble, Scale.getALL_NOTES_MAP().get(noteKeyDouble)]);
 
-            if(noteKeyDouble > 7){
+            if (noteKeyDouble > 7) {
                 noteKeyDouble /= 10;
             }
-            
-            if(this.getHalfSteps().includes(i)){
+
+            if (this.getHalfSteps().includes(i)) {
                 noteKeyDouble += 0.5;
             }
-            else{
-                noteKeyDouble +=1.0;
+            else {
+                noteKeyDouble += 1.0;
             }
 
-            if(noteKeyDouble >= this.getLengthOfScale()){
+            if (noteKeyDouble >= this.getLengthOfScale()) {
                 noteKeyDouble %= this.getLengthOfScale();
-                noteKeyDouble ++;
+                noteKeyDouble++;
             }
         }
         //
-        
-       let notesString = '';
-       let noteStringArray = [];
-       let difference;
+
+        let notesString = '';
+        let noteStringArray = [];
+        let difference;
 
         let startingIndex = (this.getScaleNotes()[0][1].length == 1) ? Scale.NOTES_ORDER_ARRAY.indexOf(this.getScaleNotes()[0][1]) : Scale.NOTES_ORDER_ARRAY.indexOf(this.getScaleNotes()[0][1][0]);
-        
-        for (let i = 0; i < this.getScaleNotes().length; i++){
-                if(!(this.getScaleNameString()=='DurPentatonik' && (i==3 || i==6)) && !(this.getScaleNameString()=='MolPentatonik' && (i==1 || i==5))){
 
-                    let note = this.getScaleNotes()[i][1];
-                    let noteDouble = this.getScaleNotes()[i][0];
-                    let noteSuffix = '';
-                    let index = (startingIndex + i) % Scale.NOTES_ORDER_ARRAY.length;
-                    if(note[0] != Scale.NOTES_ORDER_ARRAY[index]){
-                        if(note[0] == 'C' && Scale.NOTES_ORDER_ARRAY[index][0] == 'H'){
-                            noteDouble = 7;
+        for (let i = 0; i < this.getScaleNotes().length; i++) {
+            if (!(this.getScaleNameString() == 'MajorPentatonic' && (i == 3 || i == 6)) && !(this.getScaleNameString() == 'MinorPentatonic' && (i == 1 || i == 5))) {
+
+                let note = this.getScaleNotes()[i][1];
+                let noteDouble = this.getScaleNotes()[i][0];
+                let noteSuffix = '';
+                let index = (startingIndex + i) % Scale.NOTES_ORDER_ARRAY.length;
+                if (note[0] != Scale.NOTES_ORDER_ARRAY[index]) {
+                    if (note[0] == 'C' && Scale.NOTES_ORDER_ARRAY[index][0] == 'B') {
+                        noteDouble = 7;
+                    }
+                    else if (note[0] == 'B' && Scale.NOTES_ORDER_ARRAY[index][0] == 'C') {
+                        noteDouble = 0.5;
+                    }
+                    else if (Scale.NOTES_ORDER_ARRAY[index][0] == 'C') {
+                        noteDouble = 0.5;
+                    }
+                    difference = noteDouble - Scale.ALL_NOTES_MAPS_SWAPPED.get(Scale.NOTES_ORDER_ARRAY[index]);
+                    note = Scale.NOTES_ORDER_ARRAY[index];
+                    while (difference != 0) {
+                        if (difference > 0) {
+                            noteSuffix += '#';
+                            difference -= 0.5;
                         }
-                        else if( note[0] == 'H' && Scale.NOTES_ORDER_ARRAY[index][0] == 'C'){
-                            noteDouble = 0.5;
-                        }
-                        else if(Scale.NOTES_ORDER_ARRAY[index][0] == 'C'){
-                            noteDouble = 0.5;
-                        }
-                        difference = noteDouble - Scale.ALL_NOTES_MAPS_SWAPPED.get(Scale.NOTES_ORDER_ARRAY[index]);
-                        note = Scale.NOTES_ORDER_ARRAY[index];
-                        while(difference != 0){
-                            if(difference > 0){
-                                noteSuffix += '#';
-                                difference -= 0.5;
-                            }
-                            else{
-                                noteSuffix += 'b';
-                                difference += 0.5;
-                            }
+                        else {
+                            noteSuffix += 'b';
+                            difference += 0.5;
                         }
                     }
-                    noteStringArray.push(note + noteSuffix);
                 }
+                noteStringArray.push(note + noteSuffix);
+            }
         }
-        if(this.getRootNoteKeyDouble() > 10){
-            let tempRootNoteKeyDouble = this.getRootNoteKeyDouble()/10;
+        if (this.getRootNoteKeyDouble() > 10) {
+            let tempRootNoteKeyDouble = this.getRootNoteKeyDouble() / 10;
             this.scaleNotes[0] = [tempRootNoteKeyDouble, Scale.getALL_NOTES_MAP().get(tempRootNoteKeyDouble)];
         }
 
         //Pentatonic
-        if(this.getScaleNameString().includes('Pentatonik')){
+        if (this.getScaleNameString().includes('Pentatonic')) {
             let withOutNotesAtPositionArray;
-            if(this.getScaleNameString()=='DurPentatonik'){
-                withOutNotesAtPositionArray = [6,3];
+            if (this.getScaleNameString() == 'MajorPentatonic') {
+                withOutNotesAtPositionArray = [6, 3];
             }
-            else if(this.getScaleNameString()=='MolPentatonik'){
+            else if (this.getScaleNameString() == 'MinorPentatonic') {
                 withOutNotesAtPositionArray = [5, 1]
-           }
-            this.getScaleNotes().splice(withOutNotesAtPositionArray[0],1);
-            this.getScaleNotes().splice(withOutNotesAtPositionArray[1],1); 
+            }
+            this.getScaleNotes().splice(withOutNotesAtPositionArray[0], 1);
+            this.getScaleNotes().splice(withOutNotesAtPositionArray[1], 1);
         }
 
         return noteStringArray;
     }
 
 
-    setAndCalculateRandomScale(aAreModesActivatedBoolean){
-        let scaleKeyArray = aAreModesActivatedBoolean ? Array.from(Scale.ALL_SCALES_MAP.keys()) : Array.from(Scale.STANDARD_SCALE_MAP.keys()) ;
+    setAndCalculateRandomScale(aAreModesActivatedBoolean) {
+        let scaleKeyArray = aAreModesActivatedBoolean ? Array.from(Scale.ALL_SCALES_MAP.keys()) : Array.from(Scale.STANDARD_SCALE_MAP.keys());
         let noteKeyArray = Array.from(Scale.ALL_NOTES_MAP.keys());
-        this.setScale(scaleKeyArray.at(Math.floor(Math.random()*scaleKeyArray.length)));
+        this.setScale(scaleKeyArray.at(Math.floor(Math.random() * scaleKeyArray.length)));
         this.setRootNoteKeyDouble(noteKeyArray.at(Math.floor(Math.random() * noteKeyArray.length)));
-        return this.calculateScale();  
+        return this.calculateScale();
     }
 
-    getChordMatchingToNote(aNote){
+    getChordMatchingToNote(aNote) {
 
     }
 
@@ -195,7 +195,7 @@ class Scale {
     getScaleNameString() {
         return this.scaleNameString;
     }
-    setScaleNameString(aScaleNameString){
+    setScaleNameString(aScaleNameString) {
         this.scaleNameString = aScaleNameString;
     }
 
@@ -203,7 +203,7 @@ class Scale {
         this.setScaleNameString(aScaleNameString);
         let scaleMap = Scale.getALL_SCALES_MAP().get(aScaleNameString);
         this.setLengthOfScale(scaleMap.at(0));
-        this.setHalfSteps(scaleMap.slice(1,this.getLengthOfScale()));
+        this.setHalfSteps(scaleMap.slice(1, this.getLengthOfScale()));
     }
     getScaleNotes() {
         return this.scaleNotes;
@@ -257,7 +257,7 @@ class ScaleView {
     highestFretNumber;
     lowestFretNumber;
 
-    constructor(){
+    constructor() {
         this.swtichSVGButton = document.getElementById('switchSVG');
         this.showOrHideScaleButton = document.getElementById('showOrHideScaleButton');
         this.scalesSelectbox = document.getElementById('selectedScales');
@@ -265,16 +265,16 @@ class ScaleView {
         this.scaleTextView = document.getElementById('scaleTextView');
         this.keyboardSVG = document.getElementById('keyboardSVG');
         this.guitarSVG = document.getElementById('guitarSVG');
-        this.svgContainerDiv = document.getElementById('svg-container');
+        this.svgContainerDiv = document.getElementById('svgContainer');
         this.modesButton = document.getElementById('modesButton');
         this.isKeyboardSvgShown = true;
-        this.scaleClass = new Scale('Dur', 1);
+        this.scaleClass = new Scale('Major', 1);
         this.noteColorMap = new Map();
         this.showScaleBoolean = false;
-    
+
         this.showKeyboardSVG();
-        this.initializeNoteColorMap();       
-       
+        this.initializeNoteColorMap();
+
         this.randomScaleButton = document.getElementById('randomScale');
         this.randomScaleButton.addEventListener('click', () => this.randomScaleButtonClick());
         this.swtichSVGButton.addEventListener('click', () => this.swtichSVGButtonClick());
@@ -284,68 +284,65 @@ class ScaleView {
         this.notesSelectbox.onchange = () => this.notesSelectboxOnchange();
 
         this.guitarFretBoardPosition = 0;
-      
+
 
     }
 
-    scalesSelectboxOnchange(){
+    scalesSelectboxOnchange() {
         this.scaleClass.setScale(this.scalesSelectbox.value);
-        if(this.showScaleBoolean){
-            this.showScale();
-        }   
-    }
-
-    notesSelectboxOnchange(){
-        this.scaleClass.setRootNoteKeyDouble(parseFloat(this.notesSelectbox.value));
-        if(this.showScaleBoolean){
+        if (this.showScaleBoolean) {
             this.showScale();
         }
     }
 
-   showOrHideScaleButtonClick(){
-        if(this.showScaleBoolean){
+    notesSelectboxOnchange() {
+        this.scaleClass.setRootNoteKeyDouble(parseFloat(this.notesSelectbox.value));
+        if (this.showScaleBoolean) {
+            this.showScale();
+        }
+    }
+
+    showOrHideScaleButtonClick() {
+        if (this.showScaleBoolean) {
             this.hideScale();
             this.showScaleBoolean = false;
         }
-        else{
+        else {
             this.showScale();
             this.showScaleBoolean = true;
         }
     }
 
-    modesButtonClick(){
-    
-        for (let i = 0; i < this.scalesSelectbox.options.length; i++){
-            if(i > 3){
-                if( this.scalesSelectbox.options[i].classList.contains('modesOptionInvisible')){
+    modesButtonClick() {
+
+        for (let i = 0; i < this.scalesSelectbox.options.length; i++) {
+            if (i > 3) {
+                if (this.scalesSelectbox.options[i].classList.contains('modesOptionInvisible')) {
                     this.scalesSelectbox.options[i].classList.add('modesOptionVisible');
                     this.scalesSelectbox.options[i].classList.remove('modesOptionInvisible');
-                    this.scalesSelectbox.value = 'Ionisch';
+                    this.scalesSelectbox.value = 'Ioanian';
                     this.modesButton.innerText = 'Hide Modes'
-               }
-               else{
+                }
+                else {
                     this.scalesSelectbox.options[i].classList.add('modesOptionInvisible');
                     this.scalesSelectbox.options[i].classList.remove('modesOptionVisible');
-                    this.scalesSelectbox.value = 'Dur';
+                    this.scalesSelectbox.value = 'Major';
                     this.modesButton.innerText = 'Show Modes';
-               }
-               this.scalesSelectboxOnchange();
-               if(this.showScaleBoolean){
-                    this.showScale();
                 }
             }
         }
+        this.scalesSelectboxOnchange();
     }
 
-    randomScaleButtonClick(){
-        
-        let scaleString =this.scaleClass.setAndCalculateRandomScale(  this.modesButton.innerText == 'Hide Modes' );
-        if(this.showScaleBoolean){
+    randomScaleButtonClick() {
+
+        let scaleString = this.scaleClass.setAndCalculateRandomScale(this.modesButton.innerText == 'Hide Modes');
+        if (this.showScaleBoolean) {
             this.showScale();
-            if(this.isKeyboardSvgShown){
+            if (this.isKeyboardSvgShown) {
                 this.highlightKeyboardNotes();
             }
-            else{
+            else {
                 this.highlightGuitarNotes();
             }
         }
@@ -353,33 +350,33 @@ class ScaleView {
         this.notesSelectbox.value = this.scaleClass.rootNoteKeyDouble;
     }
 
-    swtichSVGButtonClick(){
+    swtichSVGButtonClick() {
         this.swtichSVG();
-        let svgLabel= document.getElementById('switchSVGLabel');
-        if(this.isKeyboardSvgShown){
-            svgLabel.innerText ='Guitar';
-            if(this.showScaleBoolean){
+        let svgLabel = document.getElementById('switchSVGLabel');
+        if (this.isKeyboardSvgShown) {
+            svgLabel.innerText = 'Guitar';
+            if (this.showScaleBoolean) {
                 this.highlightKeyboardNotes();
             }
-            else{
+            else {
                 this.resetKeyboardNotes();
             }
         }
-        else{
+        else {
             svgLabel.innerText = 'Keyboard';
 
-            if(this.showScaleBoolean){
-                if(this.showScaleBoolean){
+            if (this.showScaleBoolean) {
+                if (this.showScaleBoolean) {
                     this.highlightGuitarNotes();
                 }
             }
-            else{
+            else {
                 this.resetGuitarNotes();
             }
         }
     }
 
-    showScale(){
+    showScale() {
         this.showScaleBoolean = true;
 
         let i = 0;
@@ -392,93 +389,93 @@ class ScaleView {
             noteSpan.style.backgroundColor = this.noteColorMap.get(scaleNote[1]);
             noteSpan.style.color = '#000000';
             noteSpan.style.margin = '5px';
-            noteSpan.style.padding= '5px';
+            noteSpan.style.padding = '5px';
             this.scaleTextView.appendChild(noteSpan);
             i++;
         });
         //
 
-        if (this.isKeyboardSvgShown){
+        if (this.isKeyboardSvgShown) {
             this.highlightKeyboardNotes();
         }
-        else{
+        else {
             this.highlightGuitarNotes();
         }
         document.getElementById('showScaleLabel').innerText = 'Hide Scale';
-        
+
     }
 
-    hideScale(){
+    hideScale() {
         this.showScaleBoolean = false;
         this.scaleTextView.innerText = '';
-        if(this.isKeyboardSvgShown){
+        if (this.isKeyboardSvgShown) {
             this.resetKeyboardNotes();
         }
-        else{
+        else {
             this.resetGuitarNotes();
         }
         document.getElementById('showScaleLabel').innerText = 'Show Scale';
     }
-    
-    highlightStringNotes(){
+
+    highlightStringNotes() {
         let scaleNotesString = this.scaleClass.calculateScale();
     }
 
 
-    highlightKeyboardNotes(){
+    highlightKeyboardNotes() {
         // Braucht eine andere Datenstruktur?
         this.resetKeyboardNotes();
 
         //Marks notes in scale
         let rootNoteKeyDouble = this.scaleClass.scaleNotes[0][0];
-        
+
         this.scaleClass.scaleNotes.forEach(eachNote => {
             //c1 - h2 H=6.5 c1=1 d1<c1
-           if(rootNoteKeyDouble <= eachNote[0]){
-            document.getElementById(eachNote[1].concat("1")).style.fill = /*'#21BF75';*/this.noteColorMap.get(eachNote[1]);
-           }
-           else{
-            document.getElementById(eachNote[1].concat("2")).style.fill = /*'#21BF75';*/this.noteColorMap.get(eachNote[1]);
-           }
+            if (rootNoteKeyDouble <= eachNote[0]) {
+                document.getElementById(eachNote[1].concat("1")).style.fill = /*'#21BF75';*/this.noteColorMap.get(eachNote[1]);
+            }
+            else {
+                document.getElementById(eachNote[1].concat("2")).style.fill = /*'#21BF75';*/this.noteColorMap.get(eachNote[1]);
+            }
         });
     }
 
-    resetKeyboardNotes(){
+    resetKeyboardNotes() {
         Scale.ALL_NOTES_MAP.forEach((eachNote, eachKey) => {
             let fill = '#ffffff';
-            if([1.5, 2.5, 4, 5, 6].includes(eachKey)){
-                fill = '#000000';   
+            if ([1.5, 2.5, 4, 5, 6].includes(eachKey)) {
+                fill = '#000000';
             }
             //dirty fix
-            if(document.getElementById(eachNote.concat("1")) != null && document.getElementById(eachNote.concat("2")) != null){
+            if (document.getElementById(eachNote.concat("1")) != null && document.getElementById(eachNote.concat("2")) != null) {
                 document.getElementById(eachNote.concat("1")).style.fill = fill;
                 document.getElementById(eachNote.concat("2")).style.fill = fill;
             }
         });
     }
 
-    setFretsHigher(){
-        this.guitarFretBoardPosition +=1;
+    setFretsHigher() {
+        this.guitarFretBoardPosition += 1;
         this.lowestFretNumber.innerHTML = this.guitarFretBoardPosition + 1;
         this.highestFretNumber.innerHTML = this.guitarFretBoardPosition + 5;
-        if(this.showScaleBoolean){
+        if (this.showScaleBoolean) {
             this.highlightGuitarNotes();
         }
     }
 
-    setFretsLower(){
-        if(this.guitarFretBoardPosition == 0){
+    setFretsLower() {
+        if (this.guitarFretBoardPosition == 0) {
             return false;
         }
-        this.guitarFretBoardPosition -=1;
+        this.guitarFretBoardPosition -= 1;
         this.lowestFretNumber.innerHTML = this.guitarFretBoardPosition + 1;
-        this.highestFretNumber.innerHTML = this.guitarFretBoardPosition +5;
-        if(this.showScaleBoolean){
+        this.highestFretNumber.innerHTML = this.guitarFretBoardPosition + 5;
+        if (this.showScaleBoolean) {
             this.highlightGuitarNotes();
         }
     }
 
-    highlightGuitarNotes(){
+    highlightGuitarNotes() {
 
         this.resetGuitarNotes();
 
@@ -486,7 +483,7 @@ class ScaleView {
         let guitarStringsMap = new Map();
         guitarStringsMap.set('E', 3 + this.guitarFretBoardPosition * 0.5);
         guitarStringsMap.set('A', 5.5 + this.guitarFretBoardPosition * 0.5);
-        guitarStringsMap.set('D', 2 + this.guitarFretBoardPosition * 0.5) ;
+        guitarStringsMap.set('D', 2 + this.guitarFretBoardPosition * 0.5);
         guitarStringsMap.set('G', 4.5 + this.guitarFretBoardPosition * 0.5);
         guitarStringsMap.set('H', 6.5 + this.guitarFretBoardPosition * 0.5);
         guitarStringsMap.set('e', 3 + this.guitarFretBoardPosition * 0.5);
@@ -496,12 +493,12 @@ class ScaleView {
             scaleNotesDoubles.push(eachNote[0]);
         });
         Array.from(guitarStringsMap.keys()).forEach(eachKey => {
-            for(let j=1; j<=5; j++){
-                let guitarStringDouble = guitarStringsMap.get(eachKey) + j*0.5;
-                if(guitarStringDouble > 6.5){
+            for (let j = 1; j <= 5; j++) {
+                let guitarStringDouble = guitarStringsMap.get(eachKey) + j * 0.5;
+                if (guitarStringDouble > 6.5) {
                     guitarStringDouble = guitarStringDouble % 6.5 + 0.5;
                 }
-                if(scaleNotesDoubles.includes(guitarStringDouble)){
+                if (scaleNotesDoubles.includes(guitarStringDouble)) {
                     let guitarNote = document.getElementById(eachKey.concat(j.toString()).concat("Guitar"));
                     guitarNote.style.visibility = "visible";
                     guitarNote.style.fill = this.noteColorMap.get(Scale.ALL_NOTES_MAP.get(guitarStringDouble));
@@ -510,29 +507,29 @@ class ScaleView {
         })
     }
 
-    resetGuitarNotes(){
-        let guitarStrings = ['E', 'A','D','G','H','e']
+    resetGuitarNotes() {
+        let guitarStrings = ['E', 'A', 'D', 'G', 'H', 'e']
 
-        for(let i=0; i<guitarStrings.length; i++){
-            for(let j=1; j<=5; j++){
+        for (let i = 0; i < guitarStrings.length; i++) {
+            for (let j = 1; j <= 5; j++) {
                 document.getElementById(guitarStrings[i].concat(j.toString()).concat("Guitar")).style.visibility = "hidden";
             }
-        } 
+        }
     }
 
-    showGuitarSVG(){
-       this.svgContainerDiv.removeChild(this.keyboardSVG);
-       this.svgContainerDiv.appendChild(this.guitarSVG);
+    showGuitarSVG() {
+        this.svgContainerDiv.removeChild(this.keyboardSVG);
+        this.svgContainerDiv.appendChild(this.guitarSVG);
     }
-    showKeyboardSVG(){
+    showKeyboardSVG() {
         this.svgContainerDiv.removeChild(this.guitarSVG);
         this.svgContainerDiv.appendChild(this.keyboardSVG);
     }
-    
-    swtichSVG(){
-        if(this.svgContainerDiv.firstElementChild == this.keyboardSVG){
+
+    swtichSVG() {
+        if (this.svgContainerDiv.firstElementChild == this.keyboardSVG) {
             this.showGuitarSVG();
-            if(this.highestFretNumber == null || this.lowestFretNumber == null){
+            if (this.highestFretNumber == null || this.lowestFretNumber == null) {
                 this.highestFretNumber = document.getElementById('highestFretNumber');
                 this.lowestFretNumber = document.getElementById('lowestFretNumber');
                 this.highestFretNumber.addEventListener('click', () => this.setFretsHigher());
@@ -540,35 +537,35 @@ class ScaleView {
             }
             this.isKeyboardSvgShown = false;
         }
-        else{
+        else {
             this.showKeyboardSVG();
             this.isKeyboardSvgShown = true;
         }
     }
 
-    initializeNoteColorMap(){
-        this.noteColorMap.set('C','#F26B8F');
-        this.noteColorMap.set('C#','#F1A7F2');
-        this.noteColorMap.set('Db','#F1A7F2');
-        this.noteColorMap.set('D','#A2F2E4');
-        this.noteColorMap.set('D#','#F2B705');
-        this.noteColorMap.set('Eb','#F2B705');
-        this.noteColorMap.set('E','#F28705');
+    initializeNoteColorMap() {
+        this.noteColorMap.set('C', '#F26B8F');
+        this.noteColorMap.set('C#', '#F1A7F2');
+        this.noteColorMap.set('Db', '#F1A7F2');
+        this.noteColorMap.set('D', '#A2F2E4');
+        this.noteColorMap.set('D#', '#F2B705');
+        this.noteColorMap.set('Eb', '#F2B705');
+        this.noteColorMap.set('E', '#F28705');
         //e# fehlt
-        this.noteColorMap.set('Fb','#B967FF');
-        this.noteColorMap.set('F','#B967FF');
-        this.noteColorMap.set('F#','#FF71CE');
-        this.noteColorMap.set('Gb','#FF71CE');
-        this.noteColorMap.set('G','#21BF75');
-        this.noteColorMap.set('G#','#F2EFBB');
-        this.noteColorMap.set('Ab','#F2EFBB');
-        this.noteColorMap.set('A','#F29991');
-        this.noteColorMap.set('A#','#B57114');
-        this.noteColorMap.set('Hb','#B57114');
-        this.noteColorMap.set('H','#962B09');
-        this.noteColorMap.set('Cb','#962B09');
+        this.noteColorMap.set('Fb', '#B967FF');
+        this.noteColorMap.set('F', '#B967FF');
+        this.noteColorMap.set('F#', '#FF71CE');
+        this.noteColorMap.set('Gb', '#FF71CE');
+        this.noteColorMap.set('G', '#21BF75');
+        this.noteColorMap.set('G#', '#F2EFBB');
+        this.noteColorMap.set('Ab', '#F2EFBB');
+        this.noteColorMap.set('A', '#F29991');
+        this.noteColorMap.set('A#', '#B57114');
+        this.noteColorMap.set('Bb', '#B57114');
+        this.noteColorMap.set('B', '#962B09');
+        this.noteColorMap.set('Cb', '#962B09');
 
-      }
+    }
 }
 
 
