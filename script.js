@@ -100,7 +100,7 @@ class Scale {
         for (let i = 0; i < this.getLengthOfScale(); i++) {
             let aNote = new Note(Scale.getALL_NOTES_MAP().get(noteKeyDouble), noteKeyDouble, i+1);
 
-            this.getScaleNotes().push(aNote/*[noteKeyDouble, Scale.getALL_NOTES_MAP().get(noteKeyDouble)]*/);
+            this.getScaleNotes().push(aNote);
             //Fixed 7 is not goood 
             if (noteKeyDouble > 7) {
                 noteKeyDouble /= 10;
@@ -124,13 +124,13 @@ class Scale {
         let noteStringArray = [];
         let difference;
 
-        let startingIndex = (this.getScaleNotes()[0][1].length == 1) ? Scale.NOTES_ORDER_ARRAY.indexOf(this.getScaleNotes()[0][1]) : Scale.NOTES_ORDER_ARRAY.indexOf(this.getScaleNotes()[0][1][0]);
+        let startingIndex = (this.getScaleNotes()[0].noteString.length == 1) ? Scale.NOTES_ORDER_ARRAY.indexOf(this.getScaleNotes()[0].noteString) : Scale.NOTES_ORDER_ARRAY.indexOf(this.getScaleNotes()[0].noteString[0]);
 
         for (let i = 0; i < this.getScaleNotes().length; i++) {
             if (!(this.getScaleNameString() == 'MajorPentatonic' && (i == 3 || i == 6)) && !(this.getScaleNameString() == 'MinorPentatonic' && (i == 1 || i == 5))) {
 
-                let note = this.getScaleNotes()[i][1];
-                let noteDouble = this.getScaleNotes()[i][0];
+                let note = this.getScaleNotes()[i].noteString;
+                let noteDouble = this.getScaleNotes()[i].noteDouble;
                 let noteSuffix = '';
                 let index = (startingIndex + i) % Scale.NOTES_ORDER_ARRAY.length;
                 if (note[0] != Scale.NOTES_ORDER_ARRAY[index]) {
@@ -161,7 +161,7 @@ class Scale {
         }
         if (this.getRootNoteKeyDouble() > 10) {
             let tempRootNoteKeyDouble = this.getRootNoteKeyDouble() / 10;
-            this.scaleNotes[0] = [tempRootNoteKeyDouble, Scale.getALL_NOTES_MAP().get(tempRootNoteKeyDouble)];
+            this.scaleNotes[0] = new Note(Scale.getALL_NOTES_MAP().get(tempRootNoteKeyDouble), tempRootNoteKeyDouble, 1);
         }
 
         //Pentatonic
@@ -396,7 +396,7 @@ class ScaleView {
         this.scaleClass.scaleNotes.forEach(scaleNote => {
             let noteSpan = document.createElement('span');
             noteSpan.innerText = scaleStringArray[i];
-            noteSpan.style.backgroundColor = this.noteColorMap.get(scaleNote[1]);
+            noteSpan.style.backgroundColor = this.noteColorMap.get(scaleNote.noteString);
             noteSpan.style.color = '#000000';
             noteSpan.style.margin = '5px';
             noteSpan.style.padding = '5px';
@@ -437,15 +437,15 @@ class ScaleView {
         this.resetKeyboardNotes();
 
         //Marks notes in scale
-        let rootNoteKeyDouble = this.scaleClass.scaleNotes[0][0];
+        let rootNoteKeyDouble = this.scaleClass.scaleNotes[0].noteDouble;
 
         this.scaleClass.scaleNotes.forEach(eachNote => {
             //c1 - h2 H=6.5 c1=1 d1<c1
-            if (rootNoteKeyDouble <= eachNote[0]) {
-                document.getElementById(eachNote[1].concat("1")).style.fill = /*'#21BF75';*/this.noteColorMap.get(eachNote[1]);
+            if (rootNoteKeyDouble <= eachNote.noteDouble) {
+                document.getElementById(eachNote.noteString.concat("1")).style.fill = /*'#21BF75';*/this.noteColorMap.get(eachNote.noteString);
             }
             else {
-                document.getElementById(eachNote[1].concat("2")).style.fill = /*'#21BF75';*/this.noteColorMap.get(eachNote[1]);
+                document.getElementById(eachNote.noteString.concat("2")).style.fill = /*'#21BF75';*/this.noteColorMap.get(eachNote.noteString);
             }
         });
     }
@@ -500,7 +500,7 @@ class ScaleView {
 
         let scaleNotesDoubles = [];
         this.scaleClass.scaleNotes.forEach(eachNote => {
-            scaleNotesDoubles.push(eachNote[0]);
+            scaleNotesDoubles.push(eachNote.noteDouble);
         });
         Array.from(guitarStringsMap.keys()).forEach(eachKey => {
             let eachKeyDouble = Scale.ALL_NOTES_MAP_SWAPPED.get(eachKey.toUpperCase());
