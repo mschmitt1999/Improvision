@@ -1,3 +1,12 @@
+class Note {
+    constructor(noteString, noteDouble, scaleDegree){
+        this.noteString = noteString;
+        this.noteDouble = noteDouble;
+        this.scaleDegree = scaleDegree;
+    }
+}
+
+
 class Scale {
     static ALL_NOTES_MAP;
     static ALL_NOTES_MAP_SWAPPED;
@@ -89,7 +98,10 @@ class Scale {
         this.setScaleNotes([]);
 
         for (let i = 0; i < this.getLengthOfScale(); i++) {
+            let aNote = new Note(Scale.getALL_NOTES_MAP().get(noteKeyDouble), noteKeyDouble, i+1);
 
+            this.getScaleNotes().push(aNote/*[noteKeyDouble, Scale.getALL_NOTES_MAP().get(noteKeyDouble)]*/);
+            //Fixed 7 is not goood 
             if (noteKeyDouble > 7) {
                 noteKeyDouble /= 10;
             }
