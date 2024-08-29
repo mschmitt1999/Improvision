@@ -261,6 +261,7 @@ class ScaleView {
     showScaleBoolean;
     keyboardSVG;
     guitarSVG;
+    guitarGroupNotesLayerSVG;
     guitarFretBoardPosition;
     svgContainerDiv;
     modesButton;
@@ -295,7 +296,8 @@ class ScaleView {
 
         this.guitarFretBoardPosition = 0;
 
-
+        this.guitarGroupNotesLayerSVG = document.createElementNS("http://www.w3.org/2000/svg","g");
+        this.guitarSVG.appendChild(this.guitarGroupNotesLayerSVG);
     }
 
     scalesSelectboxOnchange() {
@@ -498,39 +500,101 @@ class ScaleView {
         guitarStringsMap.set('B', 6.5 + this.guitarFretBoardPosition * 0.5);
         guitarStringsMap.set('e', 3 + this.guitarFretBoardPosition * 0.5);
 
-        let scaleNotesDoubles = [];
+        let scaleNotesMap = new Map();
         this.scaleClass.scaleNotes.forEach(eachNote => {
-            scaleNotesDoubles.push(eachNote.noteDouble);
+            scaleNotesMap.set(eachNote.noteDouble,  eachNote);
         });
+        let y= 0;
         Array.from(guitarStringsMap.keys()).forEach(eachKey => {
             let eachKeyDouble = Scale.ALL_NOTES_MAP_SWAPPED.get(eachKey.toUpperCase());
-            if(scaleNotesDoubles.includes(eachKeyDouble)){
+            if(scaleNotesMap.has(eachKeyDouble)){
                 document.getElementById("textOpenString".concat(eachKey)).style.fill = this.noteColorMap.get(Scale.ALL_NOTES_MAP.get(eachKeyDouble));
             }
-            for (let j = 1; j <= 5; j++) {
-                let guitarStringDouble = guitarStringsMap.get(eachKey) + j * 0.5;
+            for (let x = 1; x <= 5; x++) {
+                let guitarStringDouble = guitarStringsMap.get(eachKey) + x * 0.5;
                 if (guitarStringDouble > 6.5) {
                     guitarStringDouble = guitarStringDouble % 6.5 + 0.5;
                 }
-                if (scaleNotesDoubles.includes(guitarStringDouble)) {
-                    let guitarNote = document.getElementById(eachKey.concat(j.toString()).concat("Guitar"));
-                    guitarNote.style.visibility = "visible";
-                    guitarNote.style.fill = this.noteColorMap.get(Scale.ALL_NOTES_MAP.get(guitarStringDouble));
+                if (scaleNotesMap.has(guitarStringDouble)) {
+                    let aNote = scaleNotesMap.get(guitarStringDouble);
+                    this.createGuitarNoteForm([x-1,y], aNote.scaleDegree, aNote);
                 }
             }
+            y++;
         })
     }
 
     resetGuitarNotes() {
         let guitarStrings = ['E', 'A', 'D', 'G', 'B', 'e']
 
-        for (let i = 0; i < guitarStrings.length; i++) {
-            for (let j = 1; j <= 5; j++) {
-                document.getElementById(guitarStrings[i].concat(j.toString()).concat("Guitar")).style.visibility = "hidden";
-                document.getElementById("textOpenString".concat(guitarStrings[i])).style.fill = "#000000";
-            }
+        for (let i = 0; i < 6; i++) {
+            document.getElementById("textOpenString".concat(guitarStrings[i])).style.fill = "#000000";
         }
+        this.guitarGroupNotesLayerSVG.replaceChildren();
     }
+
+   
+    createGuitarNoteForm(aPositionArray, aScaleDegree, aNote){
+        let noteForm;
+        let xOffset = aPositionArray[0] * 20;
+        let yOffset = aPositionArray[1] * 10;
+        let svgNs = "http://www.w3.org/2000/svg";
+        switch(aScaleDegree){
+            case 1:
+                noteForm = document.createElementNS(svgNs,"circle"); //to create a circle. for rectangle use "rectangle"
+                noteForm.setAttributeNS(null,"cx",22.5 + xOffset);
+                noteForm.setAttributeNS(null,"cy",4.5 + yOffset);
+                noteForm.setAttributeNS(null,"r",4.5);
+                noteForm.setAttributeNS(null,"stroke","none");
+                break;
+            case 2:
+                noteForm = document.createElementNS(svgNs,"ellipse"); //to create a circle. for rectangle use "rectangle"
+                noteForm.setAttributeNS(null,"cx",22.5 + xOffset);
+                noteForm.setAttributeNS(null,"cy",5 + yOffset);
+                noteForm.setAttributeNS(null,"rx",4.5);
+                noteForm.setAttributeNS(null,"ry", 2.25)
+                noteForm.setAttributeNS(null,"stroke","none");
+                break;
+            case 3:
+                noteForm = document.createElementNS(svgNs,"path");  
+                noteForm.setAttributeNS(null, "d", "m 13.5,1 4,7 -8,-2e-7 z");  
+                noteForm.setAttributeNS(null, "transform", "matrix(1,0,0,1," + (9 + xOffset) + "," + (-1 + yOffset)+")");
+                noteForm.setAttributeNS(null, "opacity", 1);  
+                break;
+            case 4:
+                noteForm = document.createElementNS(svgNs, "rect");
+                noteForm.setAttributeNS(null,"width",9);
+                noteForm.setAttributeNS(null,"height",9);
+                noteForm.setAttributeNS(null,"x",18 + xOffset);
+                noteForm.setAttributeNS(null,"y",1 + yOffset);
+                break;
+            case 5:
+                let transform = "matrix(1,0,0,1," + (8 + xOffset) + "," + (-1 + yOffset)+")";
+                noteForm = document.createElementNS(svgNs,"path");  
+                noteForm.setAttributeNS(null, "d", "M 11,-9e-6 15,3 14,8 8,8 7,3 Z");  
+                noteForm.setAttributeNS(null, "transform","matrix(1,0,0,1,"+(12+xOffset)+","+(1+yOffset)+")"); 
+                noteForm.setAttributeNS(null, "opacity", 1);  
+                break;
+            case 6:
+                noteForm = document.createElementNS(svgNs,"path");  
+                noteForm.setAttributeNS(null, "d", "M 41.5,9.5 36,6 36,-9e-6 41.5,-3.25 l 5.5,3 0,6.4 z");  
+                noteForm.setAttributeNS(null, "transform","matrix(0.8,0,0,0.7,"+(-11+xOffset)+"," +(3.3+yOffset)+")"); 
+                noteForm.setAttributeNS(null, "opacity", 1);  
+                break;
+            case 7:
+                noteForm = document.createElementNS(svgNs,"path");  
+                noteForm.setAttributeNS(null, "d", "m 63, 5 -5 ,2.5 -5,-2.3 -1.4,-5.4 3.4,-4.5 5.6,-0.1 3.6,4.3 z");  
+                noteForm.setAttributeNS(null, "transform","matrix(0.7,0,0,0.7,"+(-18+xOffset)+","+(4+yOffset)+")"); 
+                noteForm.setAttributeNS(null, "opacity", 1);  
+                break;
+            
+        }
+        noteForm.style.fill = this.noteColorMap.get(aNote.noteString);
+        this.guitarGroupNotesLayerSVG.appendChild(noteForm);
+
+    }
+
+
 
     showGuitarSVG() {
         this.svgContainerDiv.removeChild(this.keyboardSVG);
