@@ -90,8 +90,6 @@ class Scale {
 
         for (let i = 0; i < this.getLengthOfScale(); i++) {
 
-            this.getScaleNotes().push([noteKeyDouble, Scale.getALL_NOTES_MAP().get(noteKeyDouble)]);
-
             if (noteKeyDouble > 7) {
                 noteKeyDouble /= 10;
             }
@@ -537,8 +535,8 @@ class ScaleView {
             if (this.highestFretNumber == null || this.lowestFretNumber == null) {
                 this.highestFretNumber = document.getElementById('highestFretNumber');
                 this.lowestFretNumber = document.getElementById('lowestFretNumber');
-                this.highestFretNumber.addEventListener('click', () => this.setFretsHigher());
-                this.lowestFretNumber.addEventListener('click', () => this.setFretsLower());
+                document.getElementById("fretsHigher").addEventListener('click', () => this.setFretsHigher());
+                document.getElementById("fretsLower").addEventListener('click', () => this.setFretsLower());
             }
             this.isKeyboardSvgShown = false;
         }
@@ -574,4 +572,4 @@ class ScaleView {
 }
 
 
-let sv = new ScaleView();
+new ScaleView();
