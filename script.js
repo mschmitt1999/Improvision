@@ -504,7 +504,7 @@ class ScaleView {
         this.scaleClass.scaleNotes.forEach(eachNote => {
             scaleNotesMap.set(eachNote.noteDouble,  eachNote);
         });
-        let y= 0;
+        let y= 5;
         Array.from(guitarStringsMap.keys()).forEach(eachKey => {
             let eachKeyDouble = Scale.ALL_NOTES_MAP_SWAPPED.get(eachKey.toUpperCase());
             if(scaleNotesMap.has(eachKeyDouble)){
@@ -520,7 +520,7 @@ class ScaleView {
                     this.createGuitarNoteForm([x-1,y], aNote.scaleDegree, aNote);
                 }
             }
-            y++;
+            y--;
         })
     }
 
