@@ -126,7 +126,6 @@ body::before {
     #selectedNotes,
     #selectedScales {
         padding: 10px;
-        width: 20vw;
         border: 2px solid #dcdcdc;
         border-radius: 20px;
         background-color: #333333;
@@ -135,7 +134,10 @@ body::before {
 
         height: 40px;
     }
+    #selectedNotes{
+        width: 20vw;
 
+    }
 }
 /* Desktop */
 @media(min-width: 600px){
