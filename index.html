@@ -517,53 +517,55 @@
       </p>     
    </div>
    
-
-   <div id="containerSelectAndModes">
-      <div>
-         <select id="selectedNotes" name="notes">
-            <option value="1">C</option>
-            <option value="1.5">C#</option>
-            <option value="15">Db</option>
-            <option value="2">D</option>
-            <option value="2.5">D#</option>
-            <option value="25">Eb</option>
-            <option value="3">E</option>
-            <option value="30">Fb</option>
-            <option value="35">E#</option>
-            <option value="3.5">F</option>
-            <option value="4">F#</option>
-            <option value="40">Gb</option>
-            <option value="4.5">G</option>
-            <option value="5">G#</option>
-            <option value="50">Ab</option>
-            <option value="5.5">A</option>
-            <option value="6">A#</option>
-            <option value="60">Bb</option>
-            <option value="6.5">B</option>
-            <option value="65">Cb</option>
-         </select>
-
-         <select id="selectedScales" name="scales">
-            <option value="Major">Major</option>
-            <option value="Minor">Minor</option>
-            <option value="MajorPentatonic">Major Pentatonic</option>
-            <option value="MinorPentatonic">Minor Pentatonic</option>
-            <option value="Ioanian" class="modesOptionInvisible">Ioanian</option>
-            <option value="Dorian" class="modesOptionInvisible">Dorian</option>
-            <option value="Phrygian" class="modesOptionInvisible">Phrygian</option>
-            <option value="Lydian" class="modesOptionInvisible">Lydian</option>
-            <option value="Mixolydian" class="modesOptionInvisible">Mixolydian</option>
-            <option value="Aeolian" class="modesOptionInvisible">Aeolian</option>
-            <option value="Locrian" class="modesOptionInvisible">Locrian</option>
-      </select>
+   <div id="controlsContainer">
+      <div id="containerSelectAndModes">
+         <div id="selectsContainer">
+            <select id="selectedNotes" name="notes">
+               <option value="1">C</option>
+               <option value="1.5">C#</option>
+               <option value="15">Db</option>
+               <option value="2">D</option>
+               <option value="2.5">D#</option>
+               <option value="25">Eb</option>
+               <option value="3">E</option>
+               <option value="30">Fb</option>
+               <option value="35">E#</option>
+               <option value="3.5">F</option>
+               <option value="4">F#</option>
+               <option value="40">Gb</option>
+               <option value="4.5">G</option>
+               <option value="5">G#</option>
+               <option value="50">Ab</option>
+               <option value="5.5">A</option>
+               <option value="6">A#</option>
+               <option value="60">Bb</option>
+               <option value="6.5">B</option>
+               <option value="65">Cb</option>
+            </select>
+   
+            <select id="selectedScales" name="scales">
+               <option value="Major">Major</option>
+               <option value="Minor">Minor</option>
+               <option value="MajorPentatonic">Major Pentatonic</option>
+               <option value="MinorPentatonic">Minor Pentatonic</option>
+               <option value="Ioanian" class="modesOptionInvisible">Ioanian</option>
+               <option value="Dorian" class="modesOptionInvisible">Dorian</option>
+               <option value="Phrygian" class="modesOptionInvisible">Phrygian</option>
+               <option value="Lydian" class="modesOptionInvisible">Lydian</option>
+               <option value="Mixolydian" class="modesOptionInvisible">Mixolydian</option>
+               <option value="Aeolian" class="modesOptionInvisible">Aeolian</option>
+               <option value="Locrian" class="modesOptionInvisible">Locrian</option>
+            </select>
+         </div>
+         <button id="modesButton"><label id="modes">Show Modes</label></button>
+   
       </div>
-      <button id="modesButton"><label id="modes">Show Modes</label></button>
-
+   
+      <div id="randomOrShowScaleContainer">
+         <button id="showOrHideScaleButton"><label id="showScaleLabel">Show Scale</label></button>
+         <button id="randomScale"><label id="randomScaleLabel">Random Scale</label></button>  
+      </div>
    </div>
-   
-   <button id="showOrHideScaleButton"><label id="showScaleLabel">Show Scale</label></button>
-   <button id="randomScale"><label id="randomScaleLabel">Random Scale</label></button>      
-   
 
    <script src="script.js"></script>
 </body>

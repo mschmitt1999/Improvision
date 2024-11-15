@@ -324,7 +324,7 @@ body::before {
 }
 
 
-@media only screen {
+@media only screen{
     *{
         margin: 0px;
         padding: 0px;
@@ -373,6 +373,7 @@ body::before {
 
     #switchSVG, #modesButton{
        width: 30vw;
+       height: 40px;
     }
 
     #switchSVG{
@@ -392,11 +393,17 @@ body::before {
         margin-left: 3vw;
         margin-right: 3vw;
     }
-
+    
     #showOrHideScaleButton, #randomScale{
         width: 90vw;
+        height: 40px;
         margin: 5vw;
+        margin-bottom: 0;
     }
+    #randomScale{
+        margin-top: 2vw;
+    }
+
     #containerVisuals, #svgContainer, #showOrHideScaleButton, #randomScale{
         min-width: 250px;
     }
@@ -406,9 +413,9 @@ body::before {
         margin-left:5vw;
         margin-right: 5vw;
         margin-bottom: 2vh;
+        margin-top: 4vh;
     }
     #containerVisuals{
-        /*background-color: white;*/
         padding-bottom: 5vh;
         border: 3px solid #dcdcdc;
         border-radius: 20px;;
@@ -434,16 +441,61 @@ body::before {
         background-color: #333333;
         color: #dcdcdc;
         margin-right: 1vw;
+
+        height: 40px;
     }
 
 }
-#switchSVG, #modesButton{
-    width: 10vw;
-    height: 3vh;
+/* Desktop */
+@media(min-width: 600px){
+    #switchSVG{
+        width: 10vw;
+        height: 3vh;
+    }
+    
+
+    #scaleTextView {
+        margin: auto;
+        width: 35vw;
+        max-width: 700px;
+        /*margin-left: 35vw;
+        margin-right: 35vw;*/
+    }
+    
+    #containerSelectAndModes{
+        flex-direction: column;
+        margin: 0px;
+        gap: 10px;
+    }
+    #modesButton{
+        width: 100%
+    }
+    
+    #controlsContainer{
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        gap: 5vw;
+        margin-top: 10vh;
+    }
+    
+    #showOrHideScaleButton, #randomScale{
+        width: 100%;
+        margin: 0px;
+    }
+    
+    #randomOrShowScaleContainer{
+        display: flex;
+        flex-direction: column;
+        width: 40vw;
+        gap: 15px;
+    }
+    #selectsContainer{
+        width: 100%;
+    }
+    
+    #selectedNotes,
+    #selectedScales {
+            margin-right: 0;
+    }
 }
-
-#switchSVG{
-     border-start-start-radius: 20px;
-     border-end-end-radius: 20px;
- }
-
