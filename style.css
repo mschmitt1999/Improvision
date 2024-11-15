@@ -131,12 +131,11 @@ body::before {
         background-color: #333333;
         color: #dcdcdc;
         margin-right: 1vw;
-
+        width: 60%;
         height: 40px;
     }
     #selectedNotes{
-        width: 20vw;
-
+        width: 30%;
     }
 }
 /* Desktop */
