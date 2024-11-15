@@ -69,6 +69,7 @@ class Scale {
             ['MajorPentatonic', [7, 2, 6]], //False lengthOfScale 7 should be 5 
             ['MinorPentatonic', [7, 1, 4]],
             ['Major', [7, 2, 6]],
+            //['Major', [0,2,2,1,2,2,2]],
             ['Minor', [7, 1, 4]],
             ['Ioanian', [7, 2, 6]],
             ['Dorian', [7, 1, 5]],
@@ -251,12 +252,11 @@ class Scale {
 class ScaleView {
     randomScaleButton;
     swtichSVGButton;
-    isKeyboardSvgShown;
     showOrHideScaleButton;
     scalesSelectbox;
     notesSelectbox;
     scaleTextView;
-    scaleClass;
+    scale;
     noteColorMap;
     showScaleBoolean;
     keyboardSVG;
@@ -278,8 +278,7 @@ class ScaleView {
         this.guitarSVG = document.getElementById('guitarSVG');
         this.svgContainerDiv = document.getElementById('svgContainer');
         this.modesButton = document.getElementById('modesButton');
-        this.isKeyboardSvgShown = true;
-        this.scaleClass = new Scale('Major', 1);
+        this.scale = new Scale('Major', 1);
         this.noteColorMap = new Map();
         this.showScaleBoolean = false;
 
@@ -301,14 +300,14 @@ class ScaleView {
     }
 
     scalesSelectboxOnchange() {
-        this.scaleClass.setScale(this.scalesSelectbox.value);
+        this.scale.setScale(this.scalesSelectbox.value);
         if (this.showScaleBoolean) {
             this.showScale();
         }
     }
 
     notesSelectboxOnchange() {
-        this.scaleClass.setRootNoteKeyDouble(parseFloat(this.notesSelectbox.value));
+        this.scale.setRootNoteKeyDouble(parseFloat(this.notesSelectbox.value));
         if (this.showScaleBoolean) {
             this.showScale();
         }
@@ -330,14 +329,12 @@ class ScaleView {
         for (let i = 0; i < this.scalesSelectbox.options.length; i++) {
             if (i > 3) {
                 if (this.scalesSelectbox.options[i].classList.contains('modesOptionInvisible')) {
-                    this.scalesSelectbox.options[i].classList.add('modesOptionVisible');
                     this.scalesSelectbox.options[i].classList.remove('modesOptionInvisible');
                     this.scalesSelectbox.value = 'Ioanian';
                     this.modesButton.innerText = 'Hide Modes'
                 }
                 else {
                     this.scalesSelectbox.options[i].classList.add('modesOptionInvisible');
-                    this.scalesSelectbox.options[i].classList.remove('modesOptionVisible');
                     this.scalesSelectbox.value = 'Major';
                     this.modesButton.innerText = 'Show Modes';
                 }
@@ -348,24 +345,19 @@ class ScaleView {
 
     randomScaleButtonClick() {
 
-        let scaleString = this.scaleClass.setAndCalculateRandomScale(this.modesButton.innerText == 'Hide Modes');
+        let scaleString = this.scale.setAndCalculateRandomScale(this.modesButton.innerText == 'Hide Modes');
         if (this.showScaleBoolean) {
             this.showScale();
-            if (this.isKeyboardSvgShown) {
-                this.highlightKeyboardNotes();
-            }
-            else {
-                this.highlightGuitarNotes();
-            }
+            this.highlightNotes();
         }
-        this.scalesSelectbox.value = this.scaleClass.getScaleNameString();
-        this.notesSelectbox.value = this.scaleClass.rootNoteKeyDouble;
+        this.scalesSelectbox.value = this.scale.getScaleNameString();
+        this.notesSelectbox.value = this.scale.rootNoteKeyDouble;
     }
 
     swtichSVGButtonClick() {
         this.swtichSVG();
         let svgLabel = document.getElementById('switchSVGLabel');
-        if (this.isKeyboardSvgShown) {
+        if (Array.from(this.svgContainerDiv.children).includes(this.keyboardSVG)) {
             svgLabel.innerText = 'Guitar';
             if (this.showScaleBoolean) {
                 this.highlightKeyboardNotes();
@@ -394,25 +386,18 @@ class ScaleView {
         let i = 0;
         //Ugly aber später
         this.scaleTextView.innerText = '';
-        let scaleStringArray = this.scaleClass.calculateScale();
-        this.scaleClass.scaleNotes.forEach(scaleNote => {
+        let scaleStringArray = this.scale.calculateScale();
+        this.scale.scaleNotes.forEach(scaleNote => {
             let noteSpan = document.createElement('span');
             noteSpan.innerText = scaleStringArray[i];
+            noteSpan.classList.add("notesAsChars")
             noteSpan.style.backgroundColor = this.noteColorMap.get(scaleNote.noteString);
-            noteSpan.style.color = '#000000';
-            noteSpan.style.margin = '5px';
-            noteSpan.style.padding = '5px';
             this.scaleTextView.appendChild(noteSpan);
             i++;
         });
         //
 
-        if (this.isKeyboardSvgShown) {
-            this.highlightKeyboardNotes();
-        }
-        else {
-            this.highlightGuitarNotes();
-        }
+        this.highlightNotes();
         document.getElementById('showScaleLabel').innerText = 'Hide Scale';
 
     }
@@ -420,7 +405,7 @@ class ScaleView {
     hideScale() {
         this.showScaleBoolean = false;
         this.scaleTextView.innerText = '';
-        if (this.isKeyboardSvgShown) {
+        if (this.svgContainerDiv.firstElementChild == this.keyboardSVG) {
             this.resetKeyboardNotes();
         }
         else {
@@ -430,24 +415,31 @@ class ScaleView {
     }
 
     highlightStringNotes() {
-        let scaleNotesString = this.scaleClass.calculateScale();
+        let scaleNotesString = this.scale.calculateScale();
     }
 
-
+    highlightNotes(){
+        if (this.svgContainerDiv.firstElementChild == this.keyboardSVG) {
+            this.highlightKeyboardNotes();
+        }
+        else {
+            this.highlightGuitarNotes();
+        }
+    }
     highlightKeyboardNotes() {
         // Braucht eine andere Datenstruktur?
         this.resetKeyboardNotes();
 
         //Marks notes in scale
-        let rootNoteKeyDouble = this.scaleClass.scaleNotes[0].noteDouble;
+        let rootNoteKeyDouble = this.scale.scaleNotes[0].noteDouble;
 
-        this.scaleClass.scaleNotes.forEach(eachNote => {
+        this.scale.scaleNotes.forEach(eachNote => {
             //c1 - h2 H=6.5 c1=1 d1<c1
             if (rootNoteKeyDouble <= eachNote.noteDouble) {
-                document.getElementById(eachNote.noteString.concat("1")).style.fill = /*'#21BF75';*/this.noteColorMap.get(eachNote.noteString);
+                document.getElementById(eachNote.noteString.concat("1")).style.fill = this.noteColorMap.get(eachNote.noteString);
             }
             else {
-                document.getElementById(eachNote.noteString.concat("2")).style.fill = /*'#21BF75';*/this.noteColorMap.get(eachNote.noteString);
+                document.getElementById(eachNote.noteString.concat("2")).style.fill = this.noteColorMap.get(eachNote.noteString);
             }
         });
     }
@@ -501,7 +493,7 @@ class ScaleView {
         guitarStringsMap.set('e', 3 + this.guitarFretBoardPosition * 0.5);
 
         let scaleNotesMap = new Map();
-        this.scaleClass.scaleNotes.forEach(eachNote => {
+        this.scale.scaleNotes.forEach(eachNote => {
             scaleNotesMap.set(eachNote.noteDouble,  eachNote);
         });
         let y= 5;
@@ -528,7 +520,7 @@ class ScaleView {
         let guitarStrings = ['E', 'A', 'D', 'G', 'B', 'e']
 
         for (let i = 0; i < 6; i++) {
-            document.getElementById("textOpenString".concat(guitarStrings[i])).style.fill = "#000000";
+            document.getElementById("textOpenString".concat(guitarStrings[i])).style.fill = "#dcdcdc";
         }
         this.guitarGroupNotesLayerSVG.replaceChildren();
     }
@@ -541,14 +533,14 @@ class ScaleView {
         let svgNs = "http://www.w3.org/2000/svg";
         switch(aScaleDegree){
             case 1:
-                noteForm = document.createElementNS(svgNs,"circle"); //to create a circle. for rectangle use "rectangle"
+                noteForm = document.createElementNS(svgNs,"circle"); 
                 noteForm.setAttributeNS(null,"cx",22.5 + xOffset);
                 noteForm.setAttributeNS(null,"cy",4.5 + yOffset);
                 noteForm.setAttributeNS(null,"r",4.5);
                 noteForm.setAttributeNS(null,"stroke","none");
                 break;
             case 2:
-                noteForm = document.createElementNS(svgNs,"ellipse"); //to create a circle. for rectangle use "rectangle"
+                noteForm = document.createElementNS(svgNs,"ellipse");
                 noteForm.setAttributeNS(null,"cx",22.5 + xOffset);
                 noteForm.setAttributeNS(null,"cy",5 + yOffset);
                 noteForm.setAttributeNS(null,"rx",4.5);
@@ -594,8 +586,6 @@ class ScaleView {
 
     }
 
-
-
     showGuitarSVG() {
         this.svgContainerDiv.removeChild(this.keyboardSVG);
         this.svgContainerDiv.appendChild(this.guitarSVG);
@@ -606,7 +596,7 @@ class ScaleView {
     }
 
     swtichSVG() {
-        if (this.svgContainerDiv.firstElementChild == this.keyboardSVG) {
+        if (Array.from(this.svgContainerDiv.children).includes(this.keyboardSVG)) {
             this.showGuitarSVG();
             if (this.highestFretNumber == null || this.lowestFretNumber == null) {
                 this.highestFretNumber = document.getElementById('highestFretNumber');
@@ -614,11 +604,9 @@ class ScaleView {
                 document.getElementById("fretsHigher").addEventListener('click', () => this.setFretsHigher());
                 document.getElementById("fretsLower").addEventListener('click', () => this.setFretsLower());
             }
-            this.isKeyboardSvgShown = false;
         }
         else {
             this.showKeyboardSVG();
-            this.isKeyboardSvgShown = true;
         }
     }
 
