@@ -358,7 +358,7 @@ class ScaleView {
         this.swtichSVG();
         let svgLabel = document.getElementById('switchSVGLabel');
         if (Array.from(this.svgContainerDiv.children).includes(this.keyboardSVG)) {
-            svgLabel.innerText = 'Guitar';
+            svgLabel.innerText = 'Go to Guitar';
             if (this.showScaleBoolean) {
                 this.highlightKeyboardNotes();
             }
@@ -367,7 +367,7 @@ class ScaleView {
             }
         }
         else {
-            svgLabel.innerText = 'Keyboard';
+            svgLabel.innerText = 'Go to Keyboard';
 
             if (this.showScaleBoolean) {
                 if (this.showScaleBoolean) {

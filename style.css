@@ -57,12 +57,12 @@ body::before {
         padding: 5px;
         background-color: #8c5a30;
         color: #dcdcdc;
-        border: 2px solid #dcdcdc/;
+        border: 2px solid #dcdcdc;
         border-radius: 20px;
         transition: background-color 0.3s ease;
     }
 
-    #switchSVG, #modesButton{
+    #modesButton{
        width: 30vw;
        height: 40px;
     }
@@ -70,6 +70,9 @@ body::before {
     #switchSVG{
         border-start-start-radius: 20px;
         border-end-end-radius: 20px;
+        padding: 1vw;
+        width: fit-content;
+        height: fit-content;
     }
 
     #scaleTextView {
@@ -137,12 +140,12 @@ body::before {
     #selectedNotes{
         width: 30%;
     }
+
 }
 /* Desktop */
 @media(min-width: 600px){
     #switchSVG{
-        width: 10vw;
-        height: 3vh;
+        height: fit-content;
     }
     
 
@@ -150,8 +153,6 @@ body::before {
         margin: auto;
         width: 35vw;
         max-width: 700px;
-        /*margin-left: 35vw;
-        margin-right: 35vw;*/
     }
     
     #containerSelectAndModes{
