@@ -48,6 +48,11 @@ body::before {
         height: 100%;
         width: 100%;
     }
+    #bassSVG{
+        height: 100%;
+        width: 100%;
+    }
+    
     button{
         background-color: #8c5a30;
         color: #dcdcdc;
