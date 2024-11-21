@@ -251,7 +251,7 @@ class Scale {
 
 class ScaleView {
     randomScaleButton;
-    swtichSVGButton;
+    switchSVGButton;
     showOrHideScaleButton;
     scalesSelectbox;
     notesSelectbox;
@@ -261,21 +261,27 @@ class ScaleView {
     showScaleBoolean;
     keyboardSVG;
     guitarSVG;
+    bassSVG;
     guitarGroupNotesLayerSVG;
+    bassGroupNotesLayerSVG
     guitarFretBoardPosition;
     svgContainerDiv;
     modesButton;
     highestFretNumber;
     lowestFretNumber;
+    showsGuitar = false;
+    showsBass = false;
+    showsKeyboard = true;
 
     constructor() {
-        this.swtichSVGButton = document.getElementById('switchSVG');
+        this.switchSVGButton = document.getElementById('switchSVG');
         this.showOrHideScaleButton = document.getElementById('showOrHideScaleButton');
         this.scalesSelectbox = document.getElementById('selectedScales');
         this.notesSelectbox = document.getElementById('selectedNotes');
         this.scaleTextView = document.getElementById('scaleTextView');
         this.keyboardSVG = document.getElementById('keyboardSVG');
         this.guitarSVG = document.getElementById('guitarSVG');
+        this.bassSVG = document.getElementById('bassSVG');
         this.svgContainerDiv = document.getElementById('svgContainer');
         this.modesButton = document.getElementById('modesButton');
         this.scale = new Scale('Major', 1);
@@ -287,7 +293,7 @@ class ScaleView {
 
         this.randomScaleButton = document.getElementById('randomScale');
         this.randomScaleButton.addEventListener('click', () => this.randomScaleButtonClick());
-        this.swtichSVGButton.addEventListener('click', () => this.swtichSVGButtonClick());
+        this.switchSVGButton.addEventListener('click', () => this.switchSVGButtonClick());
         this.showOrHideScaleButton.addEventListener('click', () => this.showOrHideScaleButtonClick());
         this.modesButton.addEventListener('click', () => this.modesButtonClick());
         this.scalesSelectbox.onchange = () => this.scalesSelectboxOnchange();
@@ -297,6 +303,10 @@ class ScaleView {
 
         this.guitarGroupNotesLayerSVG = document.createElementNS("http://www.w3.org/2000/svg","g");
         this.guitarSVG.appendChild(this.guitarGroupNotesLayerSVG);
+        this.svgContainerDiv.removeChild(this.guitarSVG);
+
+        this.bassGroupNotesLayerSVG = document.createElementNS("http://www.w3.org/2000/svg","g");
+        this.bassSVG.appendChild(this.bassGroupNotesLayerSVG);
     }
 
     scalesSelectboxOnchange() {
@@ -354,10 +364,11 @@ class ScaleView {
         this.notesSelectbox.value = this.scale.rootNoteKeyDouble;
     }
 
-    swtichSVGButtonClick() {
-        this.swtichSVG();
+    switchSVGButtonClick() {
+        this.switchSVG();
         let svgLabel = document.getElementById('switchSVGLabel');
-        if (Array.from(this.svgContainerDiv.children).includes(this.keyboardSVG)) {
+        this.svgContainerDivChildren = Array.from(this.svgContainerDiv.children);
+        if (this.showsKeyboard) {
             svgLabel.innerText = 'Go to Guitar';
             if (this.showScaleBoolean) {
                 this.highlightKeyboardNotes();
@@ -366,8 +377,8 @@ class ScaleView {
                 this.resetKeyboardNotes();
             }
         }
-        else {
-            svgLabel.innerText = 'Go to Keyboard';
+        else if (this.showsGuitar){
+            svgLabel.innerText = 'Go to Bass';
 
             if (this.showScaleBoolean) {
                 if (this.showScaleBoolean) {
@@ -377,6 +388,19 @@ class ScaleView {
             else {
                 this.resetGuitarNotes();
             }
+        }
+        else if (this.showsBass){
+            
+            svgLabel.innerText = 'Go to Keyboard';
+
+            if (this.showScaleBoolean) {
+                if (this.showScaleBoolean) {
+                    this.highlightBassNotes();
+                }
+            }
+            else {
+                this.resetBassNotes();
+            } 
         }
     }
 
@@ -408,8 +432,11 @@ class ScaleView {
         if (this.svgContainerDiv.firstElementChild == this.keyboardSVG) {
             this.resetKeyboardNotes();
         }
-        else {
+        else  if (this.svgContainerDiv.firstElementChild == this.guitarSVG) {
             this.resetGuitarNotes();
+        }
+        else{
+            this.resetBassNotes()
         }
         document.getElementById('showScaleLabel').innerText = 'Show Scale';
     }
@@ -422,8 +449,11 @@ class ScaleView {
         if (this.svgContainerDiv.firstElementChild == this.keyboardSVG) {
             this.highlightKeyboardNotes();
         }
-        else {
+        else if (this.svgContainerDiv.firstElementChild == this.guitarSVG){
             this.highlightGuitarNotes();
+        }
+        else{
+            this.highlightBassNotes();
         }
     }
     highlightKeyboardNotes() {
@@ -463,7 +493,12 @@ class ScaleView {
         this.lowestFretNumber.innerHTML = this.guitarFretBoardPosition + 1;
         this.highestFretNumber.innerHTML = this.guitarFretBoardPosition + 5;
         if (this.showScaleBoolean) {
-            this.highlightGuitarNotes();
+            if(this.showsGuitar){
+                this.highlightGuitarNotes();
+            }
+            else{
+                this.highlightBassNotes();
+            }
         }
     }
 
@@ -475,14 +510,49 @@ class ScaleView {
         this.lowestFretNumber.innerHTML = this.guitarFretBoardPosition + 1;
         this.highestFretNumber.innerHTML = this.guitarFretBoardPosition + 5;
         if (this.showScaleBoolean) {
-            this.highlightGuitarNotes();
-        }
+            if(this.showsGuitar){
+                this.highlightGuitarNotes();
+            }
+            else{
+                this.highlightBassNotes();
+            }        }
     }
 
+
+    highlightStringInstrumentNotes(aStringInstrumentMap,idPrefixString, aSvgContainer){
+        this.resetStringInstrumentNotes(Array.from(aStringInstrumentMap.keys()), idPrefixString, aSvgContainer)
+
+        let scaleNotesMap = new Map();
+        this.scale.scaleNotes.forEach(eachNote => {
+            scaleNotesMap.set(eachNote.noteDouble,  eachNote);
+        });
+        let y= aStringInstrumentMap.size -1;
+        Array.from(aStringInstrumentMap.keys()).forEach(eachKey => {
+            let eachKeyDouble = Scale.ALL_NOTES_MAP_SWAPPED.get(eachKey.toUpperCase());
+            if(scaleNotesMap.has(eachKeyDouble)){
+                document.getElementById(idPrefixString.concat(eachKey)).style.fill = this.noteColorMap.get(Scale.ALL_NOTES_MAP.get(eachKeyDouble));
+            }
+            for (let x = 1; x <= 5; x++) {
+                let guitarStringDouble = aStringInstrumentMap.get(eachKey) + x * 0.5;
+                if (guitarStringDouble > 6.5) {
+                    guitarStringDouble = guitarStringDouble % 6.5 + 0.5;
+                }
+                if (scaleNotesMap.has(guitarStringDouble)) {
+                    let aNote = scaleNotesMap.get(guitarStringDouble);
+                    this.createGuitarNoteForm([x-1,y], aNote.scaleDegree, aNote, aSvgContainer);
+                }
+            }
+            y--;
+        })
+    }
+
+    resetStringInstrumentNotes(aStringNotesArray, idPrefixString, aSvgContainer){
+        for (let i = 0; i < aStringNotesArray.length; i++) {
+            document.getElementById(idPrefixString.concat(aStringNotesArray[i])).style.fill = "#dcdcdc";
+        }
+        aSvgContainer.replaceChildren();
+    }
     highlightGuitarNotes() {
-
-        this.resetGuitarNotes();
-
         //Every guitarString has it's own start value
         let guitarStringsMap = new Map();
         guitarStringsMap.set('E', 3 + this.guitarFretBoardPosition * 0.5);
@@ -492,41 +562,29 @@ class ScaleView {
         guitarStringsMap.set('B', 6.5 + this.guitarFretBoardPosition * 0.5);
         guitarStringsMap.set('e', 3 + this.guitarFretBoardPosition * 0.5);
 
-        let scaleNotesMap = new Map();
-        this.scale.scaleNotes.forEach(eachNote => {
-            scaleNotesMap.set(eachNote.noteDouble,  eachNote);
-        });
-        let y= 5;
-        Array.from(guitarStringsMap.keys()).forEach(eachKey => {
-            let eachKeyDouble = Scale.ALL_NOTES_MAP_SWAPPED.get(eachKey.toUpperCase());
-            if(scaleNotesMap.has(eachKeyDouble)){
-                document.getElementById("textOpenString".concat(eachKey)).style.fill = this.noteColorMap.get(Scale.ALL_NOTES_MAP.get(eachKeyDouble));
-            }
-            for (let x = 1; x <= 5; x++) {
-                let guitarStringDouble = guitarStringsMap.get(eachKey) + x * 0.5;
-                if (guitarStringDouble > 6.5) {
-                    guitarStringDouble = guitarStringDouble % 6.5 + 0.5;
-                }
-                if (scaleNotesMap.has(guitarStringDouble)) {
-                    let aNote = scaleNotesMap.get(guitarStringDouble);
-                    this.createGuitarNoteForm([x-1,y], aNote.scaleDegree, aNote);
-                }
-            }
-            y--;
-        })
+        this.highlightStringInstrumentNotes(guitarStringsMap, "textOpenString", this.guitarGroupNotesLayerSVG)
     }
 
     resetGuitarNotes() {
-        let guitarStrings = ['E', 'A', 'D', 'G', 'B', 'e']
+        this.resetStringInstrumentNotes(['E', 'A', 'D', 'G', 'B', 'e'], "textOpenString",this.guitarGroupNotesLayerSVG)
+    }
 
-        for (let i = 0; i < 6; i++) {
-            document.getElementById("textOpenString".concat(guitarStrings[i])).style.fill = "#dcdcdc";
-        }
-        this.guitarGroupNotesLayerSVG.replaceChildren();
+    highlightBassNotes(){
+        let bassStringsMap = new Map();
+        bassStringsMap.set('E', 3 + this.guitarFretBoardPosition * 0.5);
+        bassStringsMap.set('A', 5.5 + this.guitarFretBoardPosition * 0.5);
+        bassStringsMap.set('D', 2 + this.guitarFretBoardPosition * 0.5);
+        bassStringsMap.set('G', 4.5 + this.guitarFretBoardPosition * 0.5);
+
+        this.highlightStringInstrumentNotes(bassStringsMap, "bassTextOpenString", this.bassGroupNotesLayerSVG)
+    }
+
+    resetBassNotes() {
+        this.resetStringInstrumentNotes(['E', 'A', 'D', 'G'], "bassTextOpenString", this.bassGroupNotesLayerSVG)
     }
 
    
-    createGuitarNoteForm(aPositionArray, aScaleDegree, aNote){
+    createGuitarNoteForm(aPositionArray, aScaleDegree, aNote, aSvgContainer){
         let noteForm;
         let xOffset = aPositionArray[0] * 20;
         let yOffset = aPositionArray[1] * 10;
@@ -582,7 +640,7 @@ class ScaleView {
             
         }
         noteForm.style.fill = this.noteColorMap.get(aNote.noteString);
-        this.guitarGroupNotesLayerSVG.appendChild(noteForm);
+        aSvgContainer.appendChild(noteForm);
 
     }
 
@@ -591,12 +649,18 @@ class ScaleView {
         this.svgContainerDiv.appendChild(this.guitarSVG);
     }
     showKeyboardSVG() {
-        this.svgContainerDiv.removeChild(this.guitarSVG);
+        this.svgContainerDiv.removeChild(this.bassSVG);
         this.svgContainerDiv.appendChild(this.keyboardSVG);
     }
+    showBassSVG(){
+        this.svgContainerDiv.removeChild(this.guitarSVG);
+        this.svgContainerDiv.appendChild(this.bassSVG);
+    }
 
-    swtichSVG() {
-        if (Array.from(this.svgContainerDiv.children).includes(this.keyboardSVG)) {
+    switchSVG() {
+        if (this.showsKeyboard) {
+            this.showsKeyboard = false;
+            this.showsGuitar = true;
             this.showGuitarSVG();
             if (this.highestFretNumber == null || this.lowestFretNumber == null) {
                 this.highestFretNumber = document.getElementById('highestFretNumber');
@@ -605,7 +669,19 @@ class ScaleView {
                 document.getElementById("fretsLower").addEventListener('click', () => this.setFretsLower());
             }
         }
+        else if (Array.from(this.svgContainerDiv.children).includes(this.guitarSVG)){
+            this.showsGuitar = false;
+            this.showsBass = true;
+            this.showBassSVG();
+            this.guitarFretBoardPosition = 0
+            this.highestFretNumber = document.getElementById('bassHighestFretNumber');
+            this.lowestFretNumber = document.getElementById('bassLowestFretNumber');
+            document.getElementById("bassFretsHigher").addEventListener('click', () => this.setFretsHigher());
+            document.getElementById("bassFretsLower").addEventListener('click', () => this.setFretsLower());
+        }
         else {
+            this.showsBass = false;
+            this.showsKeyboard = true;
             this.showKeyboardSVG();
         }
     }
