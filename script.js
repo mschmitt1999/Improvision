@@ -265,6 +265,7 @@ class ScaleView {
     guitarGroupNotesLayerSVG;
     bassGroupNotesLayerSVG
     guitarFretBoardPosition;
+    bassFretBoardPosition;
     svgContainerDiv;
     modesButton;
     highestFretNumber;
@@ -288,6 +289,11 @@ class ScaleView {
         this.noteColorMap = new Map();
         this.showScaleBoolean = false;
 
+        document.getElementById("fretsHigher").addEventListener('click', () => this.setFretsHigher());
+        document.getElementById("fretsLower").addEventListener('click', () => this.setFretsLower());
+        document.getElementById("bassFretsHigher").addEventListener('click', () => this.setFretsHigher());
+        document.getElementById("bassFretsLower").addEventListener('click', () => this.setFretsLower());
+                
         this.showKeyboardSVG();
         this.initializeNoteColorMap();
 
@@ -300,6 +306,7 @@ class ScaleView {
         this.notesSelectbox.onchange = () => this.notesSelectboxOnchange();
 
         this.guitarFretBoardPosition = 0;
+        this.bassFretBoardPosition = 0;
 
         this.guitarGroupNotesLayerSVG = document.createElementNS("http://www.w3.org/2000/svg","g");
         this.guitarSVG.appendChild(this.guitarGroupNotesLayerSVG);
@@ -307,6 +314,8 @@ class ScaleView {
 
         this.bassGroupNotesLayerSVG = document.createElementNS("http://www.w3.org/2000/svg","g");
         this.bassSVG.appendChild(this.bassGroupNotesLayerSVG);
+
+        
     }
 
     scalesSelectboxOnchange() {
@@ -488,8 +497,22 @@ class ScaleView {
         });
     }
 
+    resetFretsPosition(){
+        this.guitarFretBoardPosition = 0;
+        this.lowestFretNumber.innerHTML = 1;
+        this.highestFretNumber.innerHTML = 5;
+        if (this.showScaleBoolean) {
+            if(this.showsGuitar){
+                this.highlightGuitarNotes();
+            }
+            else{
+                this.highlightBassNotes();
+            }
+        }
+    }
+
     setFretsHigher() {
-        this.guitarFretBoardPosition += 1;
+        this.guitarFretBoardPosition = parseInt(this.lowestFretNumber.innerHTML);
         this.lowestFretNumber.innerHTML = this.guitarFretBoardPosition + 1;
         this.highestFretNumber.innerHTML = this.guitarFretBoardPosition + 5;
         if (this.showScaleBoolean) {
@@ -506,7 +529,7 @@ class ScaleView {
         if (this.guitarFretBoardPosition == 0) {
             return false;
         }
-        this.guitarFretBoardPosition -= 1;
+        this.guitarFretBoardPosition = parseInt(this.lowestFretNumber.innerHTML)-2;
         this.lowestFretNumber.innerHTML = this.guitarFretBoardPosition + 1;
         this.highestFretNumber.innerHTML = this.guitarFretBoardPosition + 5;
         if (this.showScaleBoolean) {
@@ -662,22 +685,16 @@ class ScaleView {
             this.showsKeyboard = false;
             this.showsGuitar = true;
             this.showGuitarSVG();
-            if (this.highestFretNumber == null || this.lowestFretNumber == null) {
-                this.highestFretNumber = document.getElementById('highestFretNumber');
-                this.lowestFretNumber = document.getElementById('lowestFretNumber');
-                document.getElementById("fretsHigher").addEventListener('click', () => this.setFretsHigher());
-                document.getElementById("fretsLower").addEventListener('click', () => this.setFretsLower());
-            }
+            this.highestFretNumber = document.getElementById('highestFretNumber');
+            this.lowestFretNumber = document.getElementById('lowestFretNumber');
+            
         }
         else if (Array.from(this.svgContainerDiv.children).includes(this.guitarSVG)){
             this.showsGuitar = false;
             this.showsBass = true;
             this.showBassSVG();
-            this.guitarFretBoardPosition = 0
             this.highestFretNumber = document.getElementById('bassHighestFretNumber');
             this.lowestFretNumber = document.getElementById('bassLowestFretNumber');
-            document.getElementById("bassFretsHigher").addEventListener('click', () => this.setFretsHigher());
-            document.getElementById("bassFretsLower").addEventListener('click', () => this.setFretsLower());
         }
         else {
             this.showsBass = false;
