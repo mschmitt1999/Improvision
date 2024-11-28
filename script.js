@@ -135,13 +135,11 @@ class Scale {
                 let noteSuffix = '';
                 let index = (startingIndex + i) % Scale.NOTES_ORDER_ARRAY.length;
                 if (note[0] != Scale.NOTES_ORDER_ARRAY[index]) {
+                    
                     if (note[0] == 'C' && Scale.NOTES_ORDER_ARRAY[index][0] == 'B') {
                         noteDouble = 7;
                     }
                     else if (note[0] == 'B' && Scale.NOTES_ORDER_ARRAY[index][0] == 'C') {
-                        noteDouble = 0.5;
-                    }
-                    else if (Scale.NOTES_ORDER_ARRAY[index][0] == 'C') {
                         noteDouble = 0.5;
                     }
                     difference = noteDouble - Scale.ALL_NOTES_MAP_SWAPPED.get(Scale.NOTES_ORDER_ARRAY[index]);
