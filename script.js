@@ -40,6 +40,7 @@ class Scale {
             [6.0, 'A#'],
             [60, 'Bb'],
             [6.5, 'B'],
+            [10, 'B#'],
             [65, 'Cb']
         ]);
 
@@ -62,6 +63,7 @@ class Scale {
             ['A#', 6.0],
             ['Bb', 6.0],
             ['B', 6.5],
+            ['B#', 10],
             ['Cb', 6.5],
         ]);
         
@@ -97,7 +99,7 @@ class Scale {
         //
         let noteKeyDouble = this.getRootNoteKeyDouble();
         this.setScaleNotes([]);
-
+        debugger
         for (let i = 0; i < this.getLengthOfScale(); i++) {
             let aNote = new Note(Scale.getALL_NOTES_MAP().get(noteKeyDouble), noteKeyDouble, i+1);
 
@@ -126,7 +128,7 @@ class Scale {
         let difference;
 
         let startingIndex = (this.getScaleNotes()[0].noteString.length == 1) ? Scale.NOTES_ORDER_ARRAY.indexOf(this.getScaleNotes()[0].noteString) : Scale.NOTES_ORDER_ARRAY.indexOf(this.getScaleNotes()[0].noteString[0]);
-
+        
         for (let i = 0; i < this.getScaleNotes().length; i++) {
             if (!(this.getScaleNameString() == 'MajorPentatonic' && (i == 3 || i == 6)) && !(this.getScaleNameString() == 'MinorPentatonic' && (i == 1 || i == 5))) {
 
@@ -709,7 +711,7 @@ class ScaleView {
         this.noteColorMap.set('D#', '#F2B705');
         this.noteColorMap.set('Eb', '#F2B705');
         this.noteColorMap.set('E', '#F28705');
-        //e# fehlt
+        this.noteColorMap.set('E#', '#B967FF');
         this.noteColorMap.set('Fb', '#B967FF');
         this.noteColorMap.set('F', '#B967FF');
         this.noteColorMap.set('F#', '#FF71CE');
@@ -721,6 +723,7 @@ class ScaleView {
         this.noteColorMap.set('A#', '#B57114');
         this.noteColorMap.set('Bb', '#B57114');
         this.noteColorMap.set('B', '#962B09');
+        this.noteColorMap.set('B#', '#F26B8F');
         this.noteColorMap.set('Cb', '#962B09');
 
     }
