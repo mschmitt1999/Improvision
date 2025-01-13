@@ -1,11 +1,10 @@
 class Note {
-    constructor(noteString, noteDouble, scaleDegree){
+    constructor(noteString, noteDouble, scaleDegree) {
         this.noteString = noteString;
         this.noteDouble = noteDouble;
         this.scaleDegree = scaleDegree;
     }
 }
-
 
 class Scale {
     static ALL_NOTES_MAP;
@@ -18,6 +17,10 @@ class Scale {
     rootNoteKeyDouble;
     scaleNameString;
     scaleNotes = [];
+
+    scale
+
+
 
     constructor(scaleString, rootNoteKeyDouble) {
         Scale.ALL_NOTES_MAP = new Map([
@@ -47,40 +50,39 @@ class Scale {
         Scale.ALL_NOTES_MAP_SWAPPED = new Map([
             ['C', 1.0],
             ['C#', 1.5],
-            ['Db', 1.5],
+            ['Db', 15],
             ['D', 2.0],
             ['D#', 2.5],
-            ['Eb', 2.5],
+            ['Eb', 25],
             ['E', 3.0],
-            ['Fb', 3.0],
+            ['Fb', 30],
             ['F', 3.5],
             ['F#', 4.0],
-            ['Gb', 4.0],
+            ['Gb', 40],
             ['G', 4.5],
             ['G#', 5.0],
-            ['Ab', 5.0],
+            ['Ab', 50],
             ['A', 5.5],
             ['A#', 6.0],
-            ['Bb', 6.0],
+            ['Bb', 60],
             ['B', 6.5],
             ['B#', 10],
-            ['Cb', 6.5],
+            ['Cb', 65],
         ]);
-        
-        Scale.ALL_SCALES_MAP = new Map([
-            ['MajorPentatonic', [7, 2, 6]], //False lengthOfScale 7 should be 5 
-            ['MinorPentatonic', [7, 1, 4]],
-            ['Major', [7, 2, 6]],
-            //['Major', [0,2,2,1,2,2,2]],
-            ['Minor', [7, 1, 4]],
-            ['Ioanian', [7, 2, 6]],
-            ['Dorian', [7, 1, 5]],
-            ['Phrygian', [7, 0, 4]],
-            ['Lydian', [7, 3, 7]],
-            ['Mixolydian', [7, 2, 5]],
-            ['Aeolian', [7, 1, 4]],
-            ['Locrian', [7, 0, 3]]
-        ]);
+
+       Scale.ALL_SCALES_MAP = new Map([
+            ['Major',[1,1,0.5,1,1,1,0.5]],
+            ['Minor',[1,0.5,1,1,0.5,1,0.5]],
+            ['MajorPentatonic',[1,1,0.5,1,1,1,0.5]],
+            ['MinorPentatonic',[1,0.5,1,1,0.5,1,1]],
+            ['Ioanian',[1,1,0.5,1,1,1,0.5]],
+            ['Dorian',[1,0.5,1,1,1,0.5,1]],
+            ['Phrygian',[0.5,1,1,1,0.5,1,1]],
+            ['Lydian',[1,1,1,0.5,1,1,1]],
+            ['Mixolydian',[1,1,0.5,1,1,0.5,1]],
+            ['Aeolian',[1,0.5,1,1,0.5,1,1]],
+            ['Locrian',[0.5,1,1,0.5,1,1,1]]
+        ])
 
         Scale.NOTES_ORDER_ARRAY = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
 
@@ -99,28 +101,20 @@ class Scale {
         //
         let noteKeyDouble = this.getRootNoteKeyDouble();
         this.setScaleNotes([]);
-        debugger
-        for (let i = 0; i < this.getLengthOfScale(); i++) {
-            let aNote = new Note(Scale.getALL_NOTES_MAP().get(noteKeyDouble), noteKeyDouble, i+1);
 
+        let scaleDegree = 0
+        this.scale.forEach(steps => {
+            let aNote = new Note(Scale.getALL_NOTES_MAP().get(noteKeyDouble), noteKeyDouble, scaleDegree ++);
             this.getScaleNotes().push(aNote);
-            //Fixed 7 is not goood 
-            if (noteKeyDouble > 7) {
+            if (noteKeyDouble > 6.5) {
                 noteKeyDouble /= 10;
             }
-
-            if (this.getHalfSteps().includes(i)) {
-                noteKeyDouble += 0.5;
-            }
-            else {
-                noteKeyDouble += 1.0;
-            }
-
+            noteKeyDouble += steps 
             if (noteKeyDouble >= this.getLengthOfScale()) {
                 noteKeyDouble %= this.getLengthOfScale();
-                noteKeyDouble++;
+                noteKeyDouble += steps;
             }
-        }
+        });
         //
 
         let notesString = '';
@@ -128,16 +122,15 @@ class Scale {
         let difference;
 
         let startingIndex = (this.getScaleNotes()[0].noteString.length == 1) ? Scale.NOTES_ORDER_ARRAY.indexOf(this.getScaleNotes()[0].noteString) : Scale.NOTES_ORDER_ARRAY.indexOf(this.getScaleNotes()[0].noteString[0]);
-        
+
         for (let i = 0; i < this.getScaleNotes().length; i++) {
             if (!(this.getScaleNameString() == 'MajorPentatonic' && (i == 3 || i == 6)) && !(this.getScaleNameString() == 'MinorPentatonic' && (i == 1 || i == 5))) {
-
                 let note = this.getScaleNotes()[i].noteString;
                 let noteDouble = this.getScaleNotes()[i].noteDouble;
                 let noteSuffix = '';
                 let index = (startingIndex + i) % Scale.NOTES_ORDER_ARRAY.length;
                 if (note[0] != Scale.NOTES_ORDER_ARRAY[index]) {
-                    
+
                     if (note[0] == 'C' && Scale.NOTES_ORDER_ARRAY[index][0] == 'B') {
                         noteDouble = 7;
                     }
@@ -212,9 +205,9 @@ class Scale {
 
     setScale(aScaleNameString) {
         this.setScaleNameString(aScaleNameString);
-        let scaleMap = Scale.getALL_SCALES_MAP().get(aScaleNameString);
-        this.setLengthOfScale(scaleMap.at(0));
-        this.setHalfSteps(scaleMap.slice(1, this.getLengthOfScale()));
+        this.scale = Scale.getALL_SCALES_MAP().get(aScaleNameString);
+        this.setLengthOfScale(this.scale.length);
+        this.setHalfSteps(this.scale.slice(1, this.getLengthOfScale()));
     }
     getScaleNotes() {
         return this.scaleNotes;
@@ -293,7 +286,7 @@ class ScaleView {
         document.getElementById("fretsLower").addEventListener('click', () => this.setFretsLower());
         document.getElementById("bassFretsHigher").addEventListener('click', () => this.setFretsHigher());
         document.getElementById("bassFretsLower").addEventListener('click', () => this.setFretsLower());
-                
+
         this.showKeyboardSVG();
         this.initializeNoteColorMap();
 
@@ -308,14 +301,14 @@ class ScaleView {
         this.guitarFretBoardPosition = 0;
         this.bassFretBoardPosition = 0;
 
-        this.guitarGroupNotesLayerSVG = document.createElementNS("http://www.w3.org/2000/svg","g");
+        this.guitarGroupNotesLayerSVG = document.createElementNS("http://www.w3.org/2000/svg", "g");
         this.guitarSVG.appendChild(this.guitarGroupNotesLayerSVG);
         this.svgContainerDiv.removeChild(this.guitarSVG);
 
-        this.bassGroupNotesLayerSVG = document.createElementNS("http://www.w3.org/2000/svg","g");
+        this.bassGroupNotesLayerSVG = document.createElementNS("http://www.w3.org/2000/svg", "g");
         this.bassSVG.appendChild(this.bassGroupNotesLayerSVG);
 
-        
+
     }
 
     scalesSelectboxOnchange() {
@@ -386,7 +379,7 @@ class ScaleView {
                 this.resetKeyboardNotes();
             }
         }
-        else if (this.showsGuitar){
+        else if (this.showsGuitar) {
             svgLabel.innerText = 'Go to Bass';
 
             if (this.showScaleBoolean) {
@@ -398,8 +391,8 @@ class ScaleView {
                 this.resetGuitarNotes();
             }
         }
-        else if (this.showsBass){
-            
+        else if (this.showsBass) {
+
             svgLabel.innerText = 'Go to Keyboard';
 
             if (this.showScaleBoolean) {
@@ -409,7 +402,7 @@ class ScaleView {
             }
             else {
                 this.resetBassNotes();
-            } 
+            }
         }
     }
 
@@ -441,10 +434,10 @@ class ScaleView {
         if (this.svgContainerDiv.firstElementChild == this.keyboardSVG) {
             this.resetKeyboardNotes();
         }
-        else  if (this.svgContainerDiv.firstElementChild == this.guitarSVG) {
+        else if (this.svgContainerDiv.firstElementChild == this.guitarSVG) {
             this.resetGuitarNotes();
         }
-        else{
+        else {
             this.resetBassNotes()
         }
         document.getElementById('showScaleLabel').innerText = 'Show Scale';
@@ -454,14 +447,14 @@ class ScaleView {
         let scaleNotesString = this.scale.calculateScale();
     }
 
-    highlightNotes(){
+    highlightNotes() {
         if (this.svgContainerDiv.firstElementChild == this.keyboardSVG) {
             this.highlightKeyboardNotes();
         }
-        else if (this.svgContainerDiv.firstElementChild == this.guitarSVG){
+        else if (this.svgContainerDiv.firstElementChild == this.guitarSVG) {
             this.highlightGuitarNotes();
         }
-        else{
+        else {
             this.highlightBassNotes();
         }
     }
@@ -497,15 +490,15 @@ class ScaleView {
         });
     }
 
-    resetFretsPosition(){
+    resetFretsPosition() {
         this.guitarFretBoardPosition = 0;
         this.lowestFretNumber.innerHTML = 1;
         this.highestFretNumber.innerHTML = 5;
         if (this.showScaleBoolean) {
-            if(this.showsGuitar){
+            if (this.showsGuitar) {
                 this.highlightGuitarNotes();
             }
-            else{
+            else {
                 this.highlightBassNotes();
             }
         }
@@ -516,10 +509,10 @@ class ScaleView {
         this.lowestFretNumber.innerHTML = this.guitarFretBoardPosition + 1;
         this.highestFretNumber.innerHTML = this.guitarFretBoardPosition + 5;
         if (this.showScaleBoolean) {
-            if(this.showsGuitar){
+            if (this.showsGuitar) {
                 this.highlightGuitarNotes();
             }
-            else{
+            else {
                 this.highlightBassNotes();
             }
         }
@@ -529,30 +522,31 @@ class ScaleView {
         if (this.guitarFretBoardPosition == 0) {
             return false;
         }
-        this.guitarFretBoardPosition = parseInt(this.lowestFretNumber.innerHTML)-2;
+        this.guitarFretBoardPosition = parseInt(this.lowestFretNumber.innerHTML) - 2;
         this.lowestFretNumber.innerHTML = this.guitarFretBoardPosition + 1;
         this.highestFretNumber.innerHTML = this.guitarFretBoardPosition + 5;
         if (this.showScaleBoolean) {
-            if(this.showsGuitar){
+            if (this.showsGuitar) {
                 this.highlightGuitarNotes();
             }
-            else{
+            else {
                 this.highlightBassNotes();
-            }        }
+            }
+        }
     }
 
 
-    highlightStringInstrumentNotes(aStringInstrumentMap,idPrefixString, aSvgContainer){
+    highlightStringInstrumentNotes(aStringInstrumentMap, idPrefixString, aSvgContainer) {
         this.resetStringInstrumentNotes(Array.from(aStringInstrumentMap.keys()), idPrefixString, aSvgContainer)
 
         let scaleNotesMap = new Map();
         this.scale.scaleNotes.forEach(eachNote => {
-            scaleNotesMap.set(eachNote.noteDouble,  eachNote);
+            scaleNotesMap.set(eachNote.noteDouble, eachNote);
         });
-        let y= aStringInstrumentMap.size -1;
+        let y = aStringInstrumentMap.size - 1;
         Array.from(aStringInstrumentMap.keys()).forEach(eachKey => {
             let eachKeyDouble = Scale.ALL_NOTES_MAP_SWAPPED.get(eachKey.toUpperCase());
-            if(scaleNotesMap.has(eachKeyDouble)){
+            if (scaleNotesMap.has(eachKeyDouble)) {
                 document.getElementById(idPrefixString.concat(eachKey)).style.fill = this.noteColorMap.get(Scale.ALL_NOTES_MAP.get(eachKeyDouble));
             }
             for (let x = 1; x <= 5; x++) {
@@ -562,14 +556,14 @@ class ScaleView {
                 }
                 if (scaleNotesMap.has(guitarStringDouble)) {
                     let aNote = scaleNotesMap.get(guitarStringDouble);
-                    this.createGuitarNoteForm([x-1,y], aNote.scaleDegree, aNote, aSvgContainer);
+                    this.createGuitarNoteForm([x - 1, y], aNote.scaleDegree, aNote, aSvgContainer);
                 }
             }
             y--;
         })
     }
 
-    resetStringInstrumentNotes(aStringNotesArray, idPrefixString, aSvgContainer){
+    resetStringInstrumentNotes(aStringNotesArray, idPrefixString, aSvgContainer) {
         for (let i = 0; i < aStringNotesArray.length; i++) {
             document.getElementById(idPrefixString.concat(aStringNotesArray[i])).style.fill = "#dcdcdc";
         }
@@ -589,10 +583,10 @@ class ScaleView {
     }
 
     resetGuitarNotes() {
-        this.resetStringInstrumentNotes(['E', 'A', 'D', 'G', 'B', 'e'], "textOpenString",this.guitarGroupNotesLayerSVG)
+        this.resetStringInstrumentNotes(['E', 'A', 'D', 'G', 'B', 'e'], "textOpenString", this.guitarGroupNotesLayerSVG)
     }
 
-    highlightBassNotes(){
+    highlightBassNotes() {
         let bassStringsMap = new Map();
         bassStringsMap.set('E', 3 + this.guitarFretBoardPosition * 0.5);
         bassStringsMap.set('A', 5.5 + this.guitarFretBoardPosition * 0.5);
@@ -606,61 +600,61 @@ class ScaleView {
         this.resetStringInstrumentNotes(['E', 'A', 'D', 'G'], "bassTextOpenString", this.bassGroupNotesLayerSVG)
     }
 
-   
-    createGuitarNoteForm(aPositionArray, aScaleDegree, aNote, aSvgContainer){
+
+    createGuitarNoteForm(aPositionArray, aScaleDegree, aNote, aSvgContainer) {
         let noteForm;
         let xOffset = aPositionArray[0] * 20;
         let yOffset = aPositionArray[1] * 10;
         let svgNs = "http://www.w3.org/2000/svg";
-        switch(aScaleDegree){
+        switch (aScaleDegree) {
             case 1:
-                noteForm = document.createElementNS(svgNs,"circle"); 
-                noteForm.setAttributeNS(null,"cx",22.5 + xOffset);
-                noteForm.setAttributeNS(null,"cy",4.5 + yOffset);
-                noteForm.setAttributeNS(null,"r",4.5);
-                noteForm.setAttributeNS(null,"stroke","none");
+                noteForm = document.createElementNS(svgNs, "circle");
+                noteForm.setAttributeNS(null, "cx", 22.5 + xOffset);
+                noteForm.setAttributeNS(null, "cy", 4.5 + yOffset);
+                noteForm.setAttributeNS(null, "r", 4.5);
+                noteForm.setAttributeNS(null, "stroke", "none");
                 break;
             case 2:
-                noteForm = document.createElementNS(svgNs,"ellipse");
-                noteForm.setAttributeNS(null,"cx",22.5 + xOffset);
-                noteForm.setAttributeNS(null,"cy",5 + yOffset);
-                noteForm.setAttributeNS(null,"rx",4.5);
-                noteForm.setAttributeNS(null,"ry", 2.25)
-                noteForm.setAttributeNS(null,"stroke","none");
+                noteForm = document.createElementNS(svgNs, "ellipse");
+                noteForm.setAttributeNS(null, "cx", 22.5 + xOffset);
+                noteForm.setAttributeNS(null, "cy", 5 + yOffset);
+                noteForm.setAttributeNS(null, "rx", 4.5);
+                noteForm.setAttributeNS(null, "ry", 2.25)
+                noteForm.setAttributeNS(null, "stroke", "none");
                 break;
             case 3:
-                noteForm = document.createElementNS(svgNs,"path");  
-                noteForm.setAttributeNS(null, "d", "m 13.5,1 4,7 -8,-2e-7 z");  
-                noteForm.setAttributeNS(null, "transform", "matrix(1,0,0,1," + (9 + xOffset) + "," + (-1 + yOffset)+")");
-                noteForm.setAttributeNS(null, "opacity", 1);  
+                noteForm = document.createElementNS(svgNs, "path");
+                noteForm.setAttributeNS(null, "d", "m 13.5,1 4,7 -8,-2e-7 z");
+                noteForm.setAttributeNS(null, "transform", "matrix(1,0,0,1," + (9 + xOffset) + "," + (-1 + yOffset) + ")");
+                noteForm.setAttributeNS(null, "opacity", 1);
                 break;
             case 4:
                 noteForm = document.createElementNS(svgNs, "rect");
-                noteForm.setAttributeNS(null,"width",9);
-                noteForm.setAttributeNS(null,"height",9);
-                noteForm.setAttributeNS(null,"x",18 + xOffset);
-                noteForm.setAttributeNS(null,"y",1 + yOffset);
+                noteForm.setAttributeNS(null, "width", 9);
+                noteForm.setAttributeNS(null, "height", 9);
+                noteForm.setAttributeNS(null, "x", 18 + xOffset);
+                noteForm.setAttributeNS(null, "y", 1 + yOffset);
                 break;
             case 5:
-                let transform = "matrix(1,0,0,1," + (8 + xOffset) + "," + (-1 + yOffset)+")";
-                noteForm = document.createElementNS(svgNs,"path");  
-                noteForm.setAttributeNS(null, "d", "M 11,-9e-6 15,3 14,8 8,8 7,3 Z");  
-                noteForm.setAttributeNS(null, "transform","matrix(1,0,0,1,"+(12+xOffset)+","+(1+yOffset)+")"); 
-                noteForm.setAttributeNS(null, "opacity", 1);  
+                let transform = "matrix(1,0,0,1," + (8 + xOffset) + "," + (-1 + yOffset) + ")";
+                noteForm = document.createElementNS(svgNs, "path");
+                noteForm.setAttributeNS(null, "d", "M 11,-9e-6 15,3 14,8 8,8 7,3 Z");
+                noteForm.setAttributeNS(null, "transform", "matrix(1,0,0,1," + (12 + xOffset) + "," + (1 + yOffset) + ")");
+                noteForm.setAttributeNS(null, "opacity", 1);
                 break;
             case 6:
-                noteForm = document.createElementNS(svgNs,"path");  
-                noteForm.setAttributeNS(null, "d", "M 41.5,9.5 36,6 36,-9e-6 41.5,-3.25 l 5.5,3 0,6.4 z");  
-                noteForm.setAttributeNS(null, "transform","matrix(0.8,0,0,0.7,"+(-11+xOffset)+"," +(3.3+yOffset)+")"); 
-                noteForm.setAttributeNS(null, "opacity", 1);  
+                noteForm = document.createElementNS(svgNs, "path");
+                noteForm.setAttributeNS(null, "d", "M 41.5,9.5 36,6 36,-9e-6 41.5,-3.25 l 5.5,3 0,6.4 z");
+                noteForm.setAttributeNS(null, "transform", "matrix(0.8,0,0,0.7," + (-11 + xOffset) + "," + (3.3 + yOffset) + ")");
+                noteForm.setAttributeNS(null, "opacity", 1);
                 break;
             case 7:
-                noteForm = document.createElementNS(svgNs,"path");  
-                noteForm.setAttributeNS(null, "d", "m 63, 5 -5 ,2.5 -5,-2.3 -1.4,-5.4 3.4,-4.5 5.6,-0.1 3.6,4.3 z");  
-                noteForm.setAttributeNS(null, "transform","matrix(0.7,0,0,0.7,"+(-18+xOffset)+","+(4+yOffset)+")"); 
-                noteForm.setAttributeNS(null, "opacity", 1);  
+                noteForm = document.createElementNS(svgNs, "path");
+                noteForm.setAttributeNS(null, "d", "m 63, 5 -5 ,2.5 -5,-2.3 -1.4,-5.4 3.4,-4.5 5.6,-0.1 3.6,4.3 z");
+                noteForm.setAttributeNS(null, "transform", "matrix(0.7,0,0,0.7," + (-18 + xOffset) + "," + (4 + yOffset) + ")");
+                noteForm.setAttributeNS(null, "opacity", 1);
                 break;
-            
+
         }
         noteForm.style.fill = this.noteColorMap.get(aNote.noteString);
         aSvgContainer.appendChild(noteForm);
@@ -675,7 +669,7 @@ class ScaleView {
         this.svgContainerDiv.removeChild(this.bassSVG);
         this.svgContainerDiv.appendChild(this.keyboardSVG);
     }
-    showBassSVG(){
+    showBassSVG() {
         this.svgContainerDiv.removeChild(this.guitarSVG);
         this.svgContainerDiv.appendChild(this.bassSVG);
     }
@@ -687,9 +681,9 @@ class ScaleView {
             this.showGuitarSVG();
             this.highestFretNumber = document.getElementById('highestFretNumber');
             this.lowestFretNumber = document.getElementById('lowestFretNumber');
-            
+
         }
-        else if (Array.from(this.svgContainerDiv.children).includes(this.guitarSVG)){
+        else if (Array.from(this.svgContainerDiv.children).includes(this.guitarSVG)) {
             this.showsGuitar = false;
             this.showsBass = true;
             this.showBassSVG();
