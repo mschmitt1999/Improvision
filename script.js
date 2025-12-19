@@ -1,3 +1,20 @@
+/**
+ * Represents a musical note including harmonic and chord-related information.
+ *
+ * This class encapsulates both the symbolic representation of a note
+ * (e.g. "C", "F#", "Bb") and its numeric representation, as well as its
+ * functional role within a musical scale. Additionally, it can store
+ * chord-related data such as chord tones, chord type, and a harmonic
+ * description or analysis.
+ *
+ * @class Note
+ * @property {string[]} chordNotes - Array of notes forming the chord.
+ * @property {string} chordType - Type of chord (major, minor, diminished).
+ * @property {string} harmonicString - Enharmonically corrected note name.
+ * @property {string} noteString - Original note name (e.g., 'C', 'F#', 'Bb').
+ * @property {number} noteDouble - Numeric representation of the note.
+ * @property {number} scaleDegree - Scale degree (1-7) within the scale.
+ */
 class Note {
     chordNotes = [];
     chordType;
@@ -8,7 +25,17 @@ class Note {
         this.scaleDegree = scaleDegree;
     }
 }
-
+/**
+ * Represents a musical scale with notes, steps, and harmonic information.
+ * @class Scale
+ * @property {Map<number, string>} allNotesMap - Maps numeric values to note names.
+ * @property {Map<string, number>} allNotesMapSwapped - Maps note names to numeric values.
+ * @property {Map<string, string[]>} allScalesMap - Maps scale names to step patterns.
+ * @property {number} rootNoteKeyDouble - Numeric value of the root note.
+ * @property {string} scaleNameString - Name of the current scale.
+ * @property {Note[]} scaleNotes - Array of Note objects in the scale.
+ * @property {number[]} scaleStepsArray - Step pattern for the current scale.
+ */
 class Scale {
     allNotesMap;
     allNotesMapSwapped;
@@ -24,7 +51,12 @@ class Scale {
         this.rootNoteKeyDouble = rootNoteKeyDouble;
     }
 
+    /**
+     * Initialize maps containing all notes and scale patterns.
+     * @returns {void}
+     */
     initializeScaleMaps(){
+        //TODO It only stores data, there for it should be seperated.
         this.allNotesMap = new Map([
             [1.0, 'C'],
             [1.5, 'C#'],
@@ -89,26 +121,27 @@ class Scale {
         ])
     }
 
+    /**
+     * Get an array with the notes ordered starting from C.
+     * @returns {string[]} Array of note names in order.
+     */
     getNotesOrderArray(){
         return ['C', 'D', 'E', 'F', 'G', 'A', 'B']
     }
 
     /**
-    * Get note string from note key double 1 --> "C".
-    *
-    * @param   aNoteKeyDouble  The whatsit to use (or whatever).
-    * @returns a note string.
-    */
+     * Get note string from numeric note value.
+     * @param {number} aNoteKeyDouble - Numeric note value.
+     * @returns {string|undefined} Note name (e.g., 'C', 'F#', 'Bb').
+     */
     getNoteStringFromNoteDouble(aNoteKeyDouble){
         return this.allNotesMap.get(aNoteKeyDouble)
     }
 
     /**
-    * Does something nifty.
-    *
-    * @param   whatsit  The whatsit to use (or whatever).
-    * @returns Array.
-    */
+     * Calculate scale notes based on the scale type and root note.
+     * @returns {void}
+     */
     calculateScale() {
         //
         let noteKeyDouble = this.rootNoteKeyDouble;
@@ -140,6 +173,10 @@ class Scale {
         this.setChordsOfScale();
     }
 
+    /**
+     * Get scale notes as an array of harmonic strings.
+     * @returns {string[]} Array of note names in the scale.
+     */
     getScaleString(){
         this.calculateScale()
         let aScaleNoteString = []
@@ -149,6 +186,11 @@ class Scale {
         return aScaleNoteString
     }
 
+    /**
+     * Set and calculate a random scale.
+     * @param {boolean} aAreModesActivatedBoolean - Include modes in random selection.
+     * @returns {string[]} Array of scale note names.
+     */
     setAndCalculateRandomScale(aAreModesActivatedBoolean) {
         let scaleKeyArray = aAreModesActivatedBoolean ? Array.from(this.allScalesMap.keys()) : ['MajorPentatonic', 'MinorPentatonic', 'Major', 'Minor'];
         let noteKeyArray = Array.from(this.allNotesMap.keys());
@@ -157,6 +199,10 @@ class Scale {
         return this.getScaleString();
     }
 
+    /**
+     * Remove notes from the scale to create pentatonic version.
+     * @returns {void}
+     */
     createPentatonicScaleFromScale(){
             let withOutNotesAtPositionArray;
             if (this.scaleNameString == 'MajorPentatonic') {
@@ -169,6 +215,10 @@ class Scale {
             this.scaleNotes.splice(withOutNotesAtPositionArray[1], 1);
     }
 
+    /**
+     * Resolve enharmonic confusion by adjusting note names to proper scale degrees.
+     * @returns {void}
+     */
     resolveEnharmonicConfusion(){
         let difference;
         let notesOrderArray = this.getNotesOrderArray()
@@ -216,6 +266,10 @@ class Scale {
         }
     }
 
+    /**
+     * Determine chord types (major/minor) for each scale degree.
+     * @returns {void}
+     */
     setChordsOfScale() {
         if(this.scaleNameString.includes("Pentatonic")){
             return
@@ -263,6 +317,11 @@ class Scale {
         }
     }
 
+    /**
+     * Set the scale by name and initialize its step pattern.
+     * @param {string} aScaleNameString - Name of the scale (e.g., 'Major', 'Minor').
+     * @returns {void}
+     */
     setScale(aScaleNameString) {
         this.scaleNameString = aScaleNameString;
         this.scaleStepsArray = this.allScalesMap.get(aScaleNameString);
@@ -270,31 +329,36 @@ class Scale {
 }
 
 
+/**
+ * Manages UI and visualization of musical scales on keyboard, guitar, and bass.
+ * @class ScaleView
+ * @property {HTMLButtonElement} switchSVGButton - Button to switch instruments.
+ * @property {HTMLButtonElement} showOrHideScaleButton - Button to toggle scale display.
+ * @property {HTMLSelectElement} scalesSelectbox - Dropdown for scale selection.
+ * @property {HTMLSelectElement} notesSelectbox - Dropdown for root note selection.
+ * @property {HTMLDivElement} scaleTextView - Container for scale text display.
+ * @property {SVGElement} keyboardSVG - SVG element for keyboard visualization.
+ * @property {SVGElement} guitarSVG - SVG element for guitar visualization.
+ * @property {SVGElement} bassSVG - SVG element for bass visualization.
+ * @property {HTMLDivElement} svgContainerDiv - Container for SVG elements.
+ * @property {HTMLButtonElement} modesButton - Button to toggle mode scales.
+ * @property {Scale} scale - Current scale object.
+ * @property {Map<string, string>} noteColorMap - Maps note names to hex colors.
+ * @property {boolean} showScaleBoolean - Whether scale is currently visible.
+ * @property {boolean} showsGuitar - Whether guitar is displayed.
+ * @property {boolean} showsBass - Whether bass is displayed.
+ * @property {boolean} showsKeyboard - Whether keyboard is displayed.
+ * @property {number} guitarFretBoardPosition - Current guitar fret board position.
+ * @property {number} bassFretBoardPosition - Current bass fret board position.
+ * @property {SVGGElement} guitarGroupNotesLayerSVG - SVG group for guitar notes.
+ * @property {SVGGElement} bassGroupNotesLayerSVG - SVG group for bass notes.
+ */
 class ScaleView {
-    randomScaleButton;
-    switchSVGButton;
-    showOrHideScaleButton;
-    scalesSelectbox;
-    notesSelectbox;
-    scaleTextView;
-    scale;
-    noteColorMap;
-    showScaleBoolean;
-    keyboardSVG;
-    guitarSVG;
-    bassSVG;
-    guitarGroupNotesLayerSVG;
-    bassGroupNotesLayerSVG
-    guitarFretBoardPosition;
-    bassFretBoardPosition;
-    svgContainerDiv;
-    modesButton;
-    highestFretNumber;
-    lowestFretNumber;
-    showsGuitar = false;
-    showsBass = false;
-    showsKeyboard = true;
 
+    /**
+     * Initialize ScaleView with UI elements and event listeners.
+     * @returns {void}
+     */
     constructor() {
         this.switchSVGButton = document.getElementById('switchSVG');
         this.showOrHideScaleButton = document.getElementById('showOrHideScaleButton');
@@ -309,6 +373,9 @@ class ScaleView {
         this.scale = new Scale('Major', 1);
         this.noteColorMap = new Map();
         this.showScaleBoolean = false;
+        this.showsGuitar = false;
+        this.showsBass = false;
+        this.showsKeyboard = true;
 
         this.setEventListeners()
         this.showKeyboardSVG();
@@ -317,6 +384,10 @@ class ScaleView {
         this.initializeBassSvg();        
     }
 
+    /**
+     * Initialize guitar SVG layer for note visualization.
+     * @returns {void}
+     */
     initializeGuitarSvg(){
         this.guitarFretBoardPosition = 0;
         this.guitarGroupNotesLayerSVG = document.createElementNS("http://www.w3.org/2000/svg", "g");
@@ -324,12 +395,20 @@ class ScaleView {
         this.svgContainerDiv.removeChild(this.guitarSVG);
     }
 
+    /**
+     * Initialize bass SVG layer for note visualization.
+     * @returns {void}
+     */
     initializeBassSvg(){
         this.bassFretBoardPosition = 0;
         this.bassGroupNotesLayerSVG = document.createElementNS("http://www.w3.org/2000/svg", "g");
         this.bassSVG.appendChild(this.bassGroupNotesLayerSVG);
     }
 
+    /**
+     * Attach event listeners to UI controls.
+     * @returns {void}
+     */
     setEventListeners(){
         document.getElementById("fretsHigher").addEventListener('click', () => this.setFretsHigher());
         document.getElementById("fretsLower").addEventListener('click', () => this.setFretsLower());
@@ -344,6 +423,10 @@ class ScaleView {
         this.notesSelectbox.onchange = () => this.notesSelectboxOnchange();
     }
 
+    /**
+     * Handle scale selection change from dropdown.
+     * @returns {void}
+     */
     scalesSelectboxOnchange() {
         this.scale.setScale(this.scalesSelectbox.value);
         if (this.showScaleBoolean) {
@@ -351,6 +434,10 @@ class ScaleView {
         }
     }
 
+    /**
+     * Handle root note selection change from dropdown.
+     * @returns {void}
+     */
     notesSelectboxOnchange() {
         this.scale.rootNoteKeyDouble = parseFloat(this.notesSelectbox.value);
         if (this.showScaleBoolean) {
@@ -358,6 +445,10 @@ class ScaleView {
         }
     }
 
+    /**
+     * Toggle scale visibility.
+     * @returns {void}
+     */
     showOrHideScaleButtonClick() {
         if (this.showScaleBoolean) {
             this.hideScale();
@@ -369,6 +460,10 @@ class ScaleView {
         }
     }
 
+    /**
+     * Toggle display of mode scales.
+     * @returns {void}
+     */
     modesButtonClick() {
         for (let i = 0; i < this.scalesSelectbox.options.length; i++) {
             if (i > 3) {
@@ -387,6 +482,10 @@ class ScaleView {
         this.scalesSelectboxOnchange();
     }
 
+    /**
+     * Handle random scale generation.
+     * @returns {void}
+     */
     randomScaleButtonClick() {
         let scaleString = this.scale.setAndCalculateRandomScale(this.modesButton.innerText == 'Hide Modes');
         if (this.showScaleBoolean) {
@@ -397,6 +496,10 @@ class ScaleView {
         this.notesSelectbox.value = this.scale.rootNoteKeyDouble;
     }
 
+    /**
+     * Handle switching between keyboard, guitar, and bass visualizations.
+     * @returns {void}
+     */
     switchSVGButtonClick() {
         this.switchSVG();
         let svgLabel = document.getElementById('switchSVGLabel');
@@ -435,6 +538,10 @@ class ScaleView {
         }
     }
 
+    /**
+     * Display scale notes with colors and interactive elements.
+     * @returns {void}
+     */
     showScale() {
         this.showScaleBoolean = true;
         let i = 0;
@@ -453,10 +560,19 @@ class ScaleView {
         document.getElementById('showScaleLabel').innerText = 'Hide Scale';
     }
 
+    /**
+     * Display chord for the selected scale note.
+     * @param {Note} scaleNote - The scale note to highlight chord for.
+     * @returns {void}
+     */
     highlightChord(scaleNote){
         console.log(scaleNote)
     }
 
+    /**
+     * Hide scale visualization and reset all note highlights.
+     * @returns {void}
+     */
     hideScale() {
         this.showScaleBoolean = false;
         this.scaleTextView.innerText = '';
@@ -473,10 +589,11 @@ class ScaleView {
         document.getElementById('showScaleLabel').innerText = 'Show Scale';
     }
 
-    highlightStringNotes() {
-        this.scale.calculateScale();
-    }
 
+    /**
+     * Highlight scale notes on the active instrument visualization.
+     * @returns {void}
+     */
     highlightNotes() {
         let firstElementChild = this.svgContainerDiv.firstElementChild
         if ( firstElementChild == this.keyboardSVG) {
@@ -490,6 +607,10 @@ class ScaleView {
         }
     }
 
+    /**
+     * Highlight scale notes on the keyboard visualization.
+     * @returns {void}
+     */
     highlightKeyboardNotes() {
         this.resetKeyboardNotes();
         let rootNoteKeyDouble = this.scale.scaleNotes[0].noteDouble;
@@ -503,6 +624,10 @@ class ScaleView {
         });
     }
 
+    /**
+     * Reset keyboard note colors to default.
+     * @returns {void}
+     */
     resetKeyboardNotes() {
         this.scale.allNotesMap.forEach((eachNote, eachKey) => {
             let fill = '#ffffff';
@@ -517,6 +642,10 @@ class ScaleView {
         });
     }
 
+    /**
+     * Reset fret board position to the beginning.
+     * @returns {void}
+     */
     resetFretsPosition() {
         this.guitarFretBoardPosition = 0;
         this.lowestFretNumber.innerHTML = 1;
@@ -531,6 +660,10 @@ class ScaleView {
         }
     }
 
+    /**
+     * Move fret board view higher (increasing fret numbers).
+     * @returns {void}
+     */
     setFretsHigher() {
         this.guitarFretBoardPosition = parseInt(this.lowestFretNumber.innerHTML);
         this.lowestFretNumber.innerHTML = this.guitarFretBoardPosition + 1;
@@ -545,6 +678,10 @@ class ScaleView {
         }
     }
 
+    /**
+     * Move fret board view lower (decreasing fret numbers).
+     * @returns {void|boolean} False if already at lowest position.
+     */
     setFretsLower() {
         if (this.guitarFretBoardPosition == 0) {
             return false;
@@ -562,6 +699,13 @@ class ScaleView {
         }
     }
 
+    /**
+     * Highlight scale notes on string instrument (guitar/bass).
+     * @param {Map<string, number>} aStringInstrumentMap - Map of strings to their tunings.
+     * @param {string} idPrefixString - ID prefix for SVG elements.
+     * @param {SVGGElement} aSvgContainer - SVG container for note shapes.
+     * @returns {void}
+     */
     highlightStringInstrumentNotes(aStringInstrumentMap, idPrefixString, aSvgContainer) {
         this.resetStringInstrumentNotes(Array.from(aStringInstrumentMap.keys()), idPrefixString, aSvgContainer)
 
@@ -589,12 +733,23 @@ class ScaleView {
         })
     }
 
+    /**
+     * Reset string instrument note colors and clear note shapes.
+     * @param {string[]} aStringNotesArray - Array of open string notes.
+     * @param {string} idPrefixString - ID prefix for SVG elements.
+     * @param {SVGGElement} aSvgContainer - SVG container to clear.
+     * @returns {void}
+     */
     resetStringInstrumentNotes(aStringNotesArray, idPrefixString, aSvgContainer) {
         for (let i = 0; i < aStringNotesArray.length; i++) {
             document.getElementById(idPrefixString.concat(aStringNotesArray[i])).style.fill = "#dcdcdc";
         }
         aSvgContainer.replaceChildren();
     }
+    /**
+     * Highlight scale notes on guitar fret board.
+     * @returns {void}
+     */
     highlightGuitarNotes() {
         //Every guitarString has it's own start value
         let guitarStringsMap = new Map();
@@ -607,10 +762,18 @@ class ScaleView {
         this.highlightStringInstrumentNotes(guitarStringsMap, "textOpenString", this.guitarGroupNotesLayerSVG)
     }
 
+    /**
+     * Reset guitar note colors and clear note shapes.
+     * @returns {void}
+     */
     resetGuitarNotes() {
         this.resetStringInstrumentNotes(['E', 'A', 'D', 'G', 'B', 'e'], "textOpenString", this.guitarGroupNotesLayerSVG)
     }
 
+    /**
+     * Highlight scale notes on bass fret board.
+     * @returns {void}
+     */
     highlightBassNotes() {
         let bassStringsMap = new Map();
         bassStringsMap.set('E', 3 + this.guitarFretBoardPosition * 0.5);
@@ -620,10 +783,22 @@ class ScaleView {
         this.highlightStringInstrumentNotes(bassStringsMap, "bassTextOpenString", this.bassGroupNotesLayerSVG)
     }
 
+    /**
+     * Reset bass note colors and clear note shapes.
+     * @returns {void}
+     */
     resetBassNotes() {
         this.resetStringInstrumentNotes(['E', 'A', 'D', 'G'], "bassTextOpenString", this.bassGroupNotesLayerSVG)
     }
 
+    /**
+     * Create SVG shape for a note on guitar/bass based on scale degree.
+     * @param {number[]} aPositionArray - [fret, string] position.
+     * @param {number} aScaleDegree - Scale degree (1-7).
+     * @param {Note} aNote - Note to display.
+     * @param {SVGGElement} aSvgContainer - Container to append shape to.
+     * @returns {void}
+     */
     createGuitarNoteForm(aPositionArray, aScaleDegree, aNote, aSvgContainer) {
         let noteForm;
         let xOffset = aPositionArray[0] * 20;
@@ -683,6 +858,10 @@ class ScaleView {
 
     }
 
+    /**
+     * Switch between keyboard, guitar, and bass visualizations.
+     * @returns {void}
+     */
     switchSVG() {
         if (this.showsKeyboard) {
             this.showsKeyboard = false;
@@ -705,19 +884,35 @@ class ScaleView {
             this.showKeyboardSVG();
         }
     }
+    /**
+     * Display guitar SVG in container.
+     * @returns {void}
+     */
     showGuitarSVG() {
         this.svgContainerDiv.removeChild(this.keyboardSVG);
         this.svgContainerDiv.appendChild(this.guitarSVG);
     }
+    /**
+     * Display keyboard SVG in container.
+     * @returns {void}
+     */
     showKeyboardSVG() {
         this.svgContainerDiv.removeChild(this.bassSVG);
         this.svgContainerDiv.appendChild(this.keyboardSVG);
     }
+    /**
+     * Display bass SVG in container.
+     * @returns {void}
+     */
     showBassSVG() {
         this.svgContainerDiv.removeChild(this.guitarSVG);
         this.svgContainerDiv.appendChild(this.bassSVG);
     }
 
+    /**
+     * Initialize map of note names to hex color values.
+     * @returns {void}
+     */
     initializeNoteColorMap() {
         this.noteColorMap.set('C', '#F26B8F');
         this.noteColorMap.set('C#', '#F1A7F2');
