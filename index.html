@@ -890,20 +890,26 @@
                <option value="65">Cb</option>
             </select>
    
-            <select id="selectedScales" name="scales">
+            <select size="1" id="selectedScales" name="scales">
                <option value="Major">Major</option>
                <option value="Minor">Minor</option>
-               <option value="MajorPentatonic">Major Pentatonic</option>
-               <option value="MinorPentatonic">Minor Pentatonic</option>
-               <option value="Ioanian" class="modesOptionInvisible">Ioanian</option>
-               <option value="Dorian" class="modesOptionInvisible">Dorian</option>
-               <option value="Phrygian" class="modesOptionInvisible">Phrygian</option>
-               <option value="Lydian" class="modesOptionInvisible">Lydian</option>
-               <option value="Mixolydian" class="modesOptionInvisible">Mixolydian</option>
-               <option value="Aeolian" class="modesOptionInvisible">Aeolian</option>
-               <option value="Locrian" class="modesOptionInvisible">Locrian</option>
-               <option value="Harmonic Minor" class="modesOptionInvisible">Harmonic Minor</option>
-               <option value='Melodic Minor' class="modesOptionInvisible"> Melodic Minor</option>
+               <optgroup label="Pentatonics">
+                  <option value="MajorPentatonic">Major Pentatonic</option>
+                  <option value="MinorPentatonic">Minor Pentatonic</option>
+               </optgroup>
+               <optgroup label="Modes">
+                  <option value="Ioanian" class="modesOptionInvisible">Ioanian</option>
+                  <option value="Dorian" class="modesOptionInvisible">Dorian</option>
+                  <option value="Phrygian" class="modesOptionInvisible">Phrygian</option>
+                  <option value="Lydian" class="modesOptionInvisible">Lydian</option>
+                  <option value="Mixolydian" class="modesOptionInvisible">Mixolydian</option>
+                  <option value="Aeolian" class="modesOptionInvisible">Aeolian</option>
+                  <option value="Locrian" class="modesOptionInvisible">Locrian</option>
+               </optgroup>
+               <optgroup label="Minor Scales">
+                  <option value="Harmonic Minor" class="modesOptionInvisible">Harmonic Minor</option>
+                  <option value='Melodic Minor' class="modesOptionInvisible"> Melodic Minor</option>
+               </optgroup>
             </select>
          </div>   
       </div>
