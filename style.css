@@ -85,12 +85,12 @@ body::before {
         border: 3px solid #dcdcdc;
         border-radius: 20px;
         text-align: center;
-        height: 8vh;
         display: flex;
         flex-direction: row;
         justify-content: space-around;
         margin-left: 3vw;
         margin-right: 3vw;
+        box-sizing: content-box;
     }
     
     #showOrHideScaleButton, #randomScale{

@@ -13,11 +13,10 @@ class Scale {
     allNotesMap;
     allNotesMapSwapped;
     allScalesMap;
-    notesOrderArray;
     rootNoteKeyDouble;
     scaleNameString;
     scaleNotes = [];
-    scale
+    scaleStepsArray;
 
     constructor(scaleString, rootNoteKeyDouble) {
         this.initializeScaleMaps();
@@ -88,19 +87,38 @@ class Scale {
             ['Harmonic Minor', [1,0.5,1,1,0.5,1.5,0.5]],
             ['Melodic Minor', [1,0.5,1,1,0.5,1,0.5,0.5]]
         ])
-
-        this.notesOrderArray = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
     }
 
+    getNotesOrderArray(){
+        return ['C', 'D', 'E', 'F', 'G', 'A', 'B']
+    }
+
+    /**
+    * Get note string from note key double 1 --> "C".
+    *
+    * @param   aNoteKeyDouble  The whatsit to use (or whatever).
+    * @returns a note string.
+    */
+    getNoteStringFromNoteDouble(aNoteKeyDouble){
+        return this.allNotesMap.get(aNoteKeyDouble)
+    }
+
+    /**
+    * Does something nifty.
+    *
+    * @param   whatsit  The whatsit to use (or whatever).
+    * @returns Array.
+    */
     calculateScale() {
         //
         let noteKeyDouble = this.rootNoteKeyDouble;
         this.scaleNotes = [];
-
         let scaleDegree = 0
-        this.scale.forEach(steps => {
+        
+        this.scaleStepsArray.forEach(steps => {
             scaleDegree ++
-            let aNote = new Note(this.allNotesMap.get(noteKeyDouble), noteKeyDouble, scaleDegree);
+            let aNoteString = this.getNoteStringFromNoteDouble(noteKeyDouble)
+            let aNote = new Note(aNoteString, noteKeyDouble, scaleDegree);
             if (noteKeyDouble >= 10) {
                 noteKeyDouble /= 10;
                 aNote.noteDouble = noteKeyDouble
@@ -114,34 +132,70 @@ class Scale {
                     
         });
         //
+        
+        this.resolveEnharmonicConfusion()
+        if (this.scaleNameString.includes('Pentatonic')) {
+            this.createPentatonicScaleFromScale();
+        }
+        this.setChordsOfScale();
+    }
 
-        let notesString = '';
-        let noteStringArray = [];
+    getScaleString(){
+        this.calculateScale()
+        let aScaleNoteString = []
+        this.scaleNotes.forEach(note => {
+            aScaleNoteString.push(note.harmonicString)
+        });
+        return aScaleNoteString
+    }
+
+    setAndCalculateRandomScale(aAreModesActivatedBoolean) {
+        let scaleKeyArray = aAreModesActivatedBoolean ? Array.from(this.allScalesMap.keys()) : ['MajorPentatonic', 'MinorPentatonic', 'Major', 'Minor'];
+        let noteKeyArray = Array.from(this.allNotesMap.keys());
+        this.setScale(scaleKeyArray.at(Math.floor(Math.random() * scaleKeyArray.length)));
+        this.rootNoteKeyDouble = noteKeyArray.at(Math.floor(Math.random() * noteKeyArray.length));
+        return this.getScaleString();
+    }
+
+    createPentatonicScaleFromScale(){
+            let withOutNotesAtPositionArray;
+            if (this.scaleNameString == 'MajorPentatonic') {
+                withOutNotesAtPositionArray = [6, 3];
+            }
+            else if (this.scaleNameString == 'MinorPentatonic') {
+                withOutNotesAtPositionArray = [5, 1]
+            }
+            this.scaleNotes.splice(withOutNotesAtPositionArray[0], 1);
+            this.scaleNotes.splice(withOutNotesAtPositionArray[1], 1);
+    }
+
+    resolveEnharmonicConfusion(){
         let difference;
-
-        let startingIndex = (this.scaleNotes[0].noteString.length == 1) ? this.notesOrderArray.indexOf(this.scaleNotes[0].noteString) : this.notesOrderArray.indexOf(this.scaleNotes[0].noteString[0]);
+        let notesOrderArray = this.getNotesOrderArray()
+        let firstNote =this.scaleNotes[0].noteString
+        let startingIndex = (firstNote.length == 1) ? notesOrderArray.indexOf(firstNote) : notesOrderArray.indexOf(firstNote[0]);
 
         for (let i = 0; i < this.scaleNotes.length; i++) {
-            if (!(this.scaleNameString == 'MajorPentatonic' && (i == 3 || i == 6)) && !(this.scaleNameString == 'MinorPentatonic' && (i == 1 || i == 5))) {
                 let note = this.scaleNotes[i].noteString;
                 let noteDouble = this.scaleNotes[i].noteDouble;
                 let noteSuffix = '';
-                let index = (startingIndex + i) % this.notesOrderArray.length;
-                if (note[0] != this.notesOrderArray[index]) {
-                    if(this.notesOrderArray[index][0] == 'C' && this.allNotesMapSwapped.get(note[0]) > 2){
+                let index = (startingIndex + i) % notesOrderArray.length;
+                let noteInNotesOrderArrayAtIndex = notesOrderArray[index][0]
+                if (note[0] != notesOrderArray[index]) {
+                    if(noteInNotesOrderArrayAtIndex == 'C' && this.allNotesMapSwapped.get(note[0]) > 2){
                         difference = noteDouble - 7
                     }
                     else{
-                        if (note[0] == 'C' && this.notesOrderArray[index][0] == 'B') {
+                        if (note[0] == 'C' && noteInNotesOrderArrayAtIndex == 'B') {
                             noteDouble = 7;
                         }
-                        else if (note[0] == 'B' && this.notesOrderArray[index][0] == 'C') {
+                        else if (note[0] == 'B' && noteInNotesOrderArrayAtIndex == 'C') {
                             noteDouble = 0.5;
                         }
-                        difference = noteDouble - this.allNotesMapSwapped.get(this.notesOrderArray[index]);
+                        difference = noteDouble - this.allNotesMapSwapped.get(notesOrderArray[index]);
                     }
               
-                    note = this.notesOrderArray[index];
+                    note = notesOrderArray[index];
                     while (difference != 0) {
                         if (difference > 0) {
                             noteSuffix += '#';
@@ -153,38 +207,13 @@ class Scale {
                         }
                     }
                 }
-                noteStringArray.push(note + noteSuffix);
                 this.scaleNotes[i].harmonicString = note + noteSuffix;
-            }
         }
         if (this.rootNoteKeyDouble >= 10) {
             let tempRootNoteKeyDouble = this.rootNoteKeyDouble / 10;
-            this.scaleNotes[0] = new Note(this.allNotesMap.get(tempRootNoteKeyDouble), tempRootNoteKeyDouble, 1);
-            this.scaleNotes[0].harmonicString = this.allNotesMap.get(this.rootNoteKeyDouble)
+            this.scaleNotes[0] = new Note(this.getNoteStringFromNoteDouble(tempRootNoteKeyDouble), tempRootNoteKeyDouble, 1);
+            this.scaleNotes[0].harmonicString = this.getNoteStringFromNoteDouble(this.rootNoteKeyDouble)
         }
-
-        //Pentatonic
-        if (this.scaleNameString.includes('Pentatonic')) {
-            let withOutNotesAtPositionArray;
-            if (this.scaleNameString == 'MajorPentatonic') {
-                withOutNotesAtPositionArray = [6, 3];
-            }
-            else if (this.scaleNameString == 'MinorPentatonic') {
-                withOutNotesAtPositionArray = [5, 1]
-            }
-            this.scaleNotes.splice(withOutNotesAtPositionArray[0], 1);
-            this.scaleNotes.splice(withOutNotesAtPositionArray[1], 1);
-        }
-        this.setChordsOfScale();
-        return noteStringArray;
-    }
-
-    setAndCalculateRandomScale(aAreModesActivatedBoolean) {
-        let scaleKeyArray = aAreModesActivatedBoolean ? Array.from(this.allScalesMap.keys()) : ['MajorPentatonic', 'MinorPentatonic', 'Major', 'Minor'];
-        let noteKeyArray = Array.from(this.allNotesMap.keys());
-        this.setScale(scaleKeyArray.at(Math.floor(Math.random() * scaleKeyArray.length)));
-        this.rootNoteKeyDouble = noteKeyArray.at(Math.floor(Math.random() * noteKeyArray.length));
-        return this.calculateScale();
     }
 
     setChordsOfScale() {
@@ -236,7 +265,7 @@ class Scale {
 
     setScale(aScaleNameString) {
         this.scaleNameString = aScaleNameString;
-        this.scale = this.allScalesMap.get(aScaleNameString);
+        this.scaleStepsArray = this.allScalesMap.get(aScaleNameString);
     }
 }
 
@@ -410,7 +439,7 @@ class ScaleView {
         this.showScaleBoolean = true;
         let i = 0;
         this.scaleTextView.innerText = '';
-        let scaleStringArray = this.scale.calculateScale();
+        let scaleStringArray = this.scale.getScaleString();
         this.scale.scaleNotes.forEach(scaleNote => {
             let noteSpan = document.createElement('span');
             noteSpan.innerText = scaleStringArray[i];
@@ -431,10 +460,11 @@ class ScaleView {
     hideScale() {
         this.showScaleBoolean = false;
         this.scaleTextView.innerText = '';
-        if (this.svgContainerDiv.firstElementChild == this.keyboardSVG) {
+        let firstElementChild = this.svgContainerDiv.firstElementChild;
+        if (firstElementChild == this.keyboardSVG) {
             this.resetKeyboardNotes();
         }
-        else if (this.svgContainerDiv.firstElementChild == this.guitarSVG) {
+        else if (firstElementChild == this.guitarSVG) {
             this.resetGuitarNotes();
         }
         else {
@@ -444,14 +474,15 @@ class ScaleView {
     }
 
     highlightStringNotes() {
-        let scaleNotesString = this.scale.calculateScale();
+        this.scale.calculateScale();
     }
 
     highlightNotes() {
-        if (this.svgContainerDiv.firstElementChild == this.keyboardSVG) {
+        let firstElementChild = this.svgContainerDiv.firstElementChild
+        if ( firstElementChild == this.keyboardSVG) {
             this.highlightKeyboardNotes();
         }
-        else if (this.svgContainerDiv.firstElementChild == this.guitarSVG) {
+        else if (firstElementChild == this.guitarSVG) {
             this.highlightGuitarNotes();
         }
         else {
@@ -460,12 +491,9 @@ class ScaleView {
     }
 
     highlightKeyboardNotes() {
-        // Braucht eine andere Datenstruktur?
         this.resetKeyboardNotes();
-        //Marks notes in scale
         let rootNoteKeyDouble = this.scale.scaleNotes[0].noteDouble;
         this.scale.scaleNotes.forEach(eachNote => {
-            //c1 - h2 H=6.5 c1=1 d1<c1
             if (rootNoteKeyDouble <= eachNote.noteDouble) {
                 document.getElementById(eachNote.noteString.concat("1")).style.fill = this.noteColorMap.get(eachNote.noteString);
             }
