@@ -188,11 +188,10 @@ class Scale {
 
     /**
      * Set and calculate a random scale.
-     * @param {boolean} aAreModesActivatedBoolean - Include modes in random selection.
      * @returns {string[]} Array of scale note names.
      */
-    setAndCalculateRandomScale(aAreModesActivatedBoolean) {
-        let scaleKeyArray = aAreModesActivatedBoolean ? Array.from(this.allScalesMap.keys()) : ['MajorPentatonic', 'MinorPentatonic', 'Major', 'Minor'];
+    setAndCalculateRandomScale() {
+        let scaleKeyArray = Array.from(this.allScalesMap.keys());
         let noteKeyArray = Array.from(this.allNotesMap.keys());
         this.setScale(scaleKeyArray.at(Math.floor(Math.random() * scaleKeyArray.length)));
         this.rootNoteKeyDouble = noteKeyArray.at(Math.floor(Math.random() * noteKeyArray.length));
@@ -341,7 +340,6 @@ class Scale {
  * @property {SVGElement} guitarSVG - SVG element for guitar visualization.
  * @property {SVGElement} bassSVG - SVG element for bass visualization.
  * @property {HTMLDivElement} svgContainerDiv - Container for SVG elements.
- * @property {HTMLButtonElement} modesButton - Button to toggle mode scales.
  * @property {Scale} scale - Current scale object.
  * @property {Map<string, string>} noteColorMap - Maps note names to hex colors.
  * @property {boolean} showScaleBoolean - Whether scale is currently visible.
@@ -369,7 +367,6 @@ class ScaleView {
         this.guitarSVG = document.getElementById('guitarSVG');
         this.bassSVG = document.getElementById('bassSVG');
         this.svgContainerDiv = document.getElementById('svgContainer');
-        this.modesButton = document.getElementById('modesButton');
         this.scale = new Scale('Major', 1);
         this.noteColorMap = new Map();
         this.showScaleBoolean = false;
@@ -418,7 +415,6 @@ class ScaleView {
         this.randomScaleButton.addEventListener('click', () => this.randomScaleButtonClick());
         this.switchSVGButton.addEventListener('click', () => this.switchSVGButtonClick());
         this.showOrHideScaleButton.addEventListener('click', () => this.showOrHideScaleButtonClick());
-        this.modesButton.addEventListener('click', () => this.modesButtonClick());
         this.scalesSelectbox.onchange = () => this.scalesSelectboxOnchange();
         this.notesSelectbox.onchange = () => this.notesSelectboxOnchange();
     }
@@ -461,33 +457,11 @@ class ScaleView {
     }
 
     /**
-     * Toggle display of mode scales.
-     * @returns {void}
-     */
-    modesButtonClick() {
-        for (let i = 0; i < this.scalesSelectbox.options.length; i++) {
-            if (i > 3) {
-                if (this.scalesSelectbox.options[i].classList.contains('modesOptionInvisible')) {
-                    this.scalesSelectbox.options[i].classList.remove('modesOptionInvisible');
-                    this.scalesSelectbox.value = 'Ioanian';
-                    this.modesButton.innerText = 'Hide Modes'
-                }
-                else {
-                    this.scalesSelectbox.options[i].classList.add('modesOptionInvisible');
-                    this.scalesSelectbox.value = 'Major';
-                    this.modesButton.innerText = 'Show Modes';
-                }
-            }
-        }
-        this.scalesSelectboxOnchange();
-    }
-
-    /**
      * Handle random scale generation.
      * @returns {void}
      */
     randomScaleButtonClick() {
-        let scaleString = this.scale.setAndCalculateRandomScale(this.modesButton.innerText == 'Hide Modes');
+        let scaleString = this.scale.setAndCalculateRandomScale();
         if (this.showScaleBoolean) {
             this.showScale();
             this.highlightNotes();
