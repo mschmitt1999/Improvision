@@ -350,7 +350,7 @@ class Scale {
  * @property {number} bassFretBoardPosition - Current bass fret board position.
  * @property {SVGGElement} guitarGroupNotesLayerSVG - SVG group for guitar notes.
  * @property {SVGGElement} bassGroupNotesLayerSVG - SVG group for bass notes.
- */
+*/
 class ScaleView {
 
     /**
@@ -378,7 +378,18 @@ class ScaleView {
         this.showKeyboardSVG();
         this.initializeNoteColorMap();
         this.initializeGuitarSvg();
-        this.initializeBassSvg();        
+        this.initializeBassSvg();       
+        
+        // Dialog setup
+        const dialog = document.getElementById("informationDialog");
+        const showButton = document.getElementById("showInformationDialogButton");
+        const closeButton = document.getElementById("closeIsnformationDialogButton");
+        showButton.addEventListener("click", () => {
+        dialog.showModal();
+        });
+        closeButton.addEventListener("click", () => {
+        dialog.close();
+        });
     }
 
     /**

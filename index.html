@@ -12,7 +12,10 @@
 <body>
    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
    <div id="containerVisuals">
-      <button id="switchSVG"><label id="switchSVGLabel">Go to Guitar</label></button>
+      <div id="containerVisualsButtonDiv">
+         <button id="switchSVG"><label id="switchSVGLabel">Go to Guitar</label></button>
+         <button id="showInformationDialogButton">About</button>
+      </div>
       <div id="svgContainer">
          <svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#"
             xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg"
@@ -918,6 +921,51 @@
          <button id="showOrHideScaleButton"><label id="showScaleLabel">Show Scale</label></button>
          <button id="randomScale"><label id="randomScaleLabel">Random Scale</label></button>  
       </div>
+
+      <dialog id="informationDialog">
+         <button id="closeIsnformationDialogButton" autofocus>✕</button>
+         <h1>Improvision</h1>
+         
+         <p>Improvision is an interactive learning platform for practicing and understanding musical scales. The application helps musicians of all instruments to explore and internalize scales visually.</p>
+         
+         <h2>Features</h2>
+         
+         <p>✨ <strong>Comprehensive Scale Selection</strong></p>
+         <ul>
+            <li>Choose from various scales (Major, Minor, Pentatonic, Modes, and much more)</li>
+            <li>All chromatic root notes available</li>
+            <li>Flexible combination of scale and root note</li>
+         </ul>
+         
+         <p>🎲 <strong>Random Generator</strong></p>
+         <ul>
+            <li>Random selection of scale and root note</li>
+            <li>Perfect for training and testing your skills</li>
+         </ul>
+         
+         <p>🎹 <strong>Multiple Instrument Visualizations</strong></p>
+         <ul>
+            <li><strong>Keyboard</strong>: Classic keyboard representation</li>
+            <li><strong>Guitar</strong>: Guitar fretboard with fret markers</li>
+            <li><strong>Bass</strong>: Bass fretboard with 4 strings</li>
+            <li><strong>Text Display</strong>: All scale tones as letters</li>
+         </ul>
+         
+         <p>🎨 <strong>Color Highlighting</strong></p>
+         <ul>
+            <li>Each scale tone is uniquely color-coded</li>
+            <li>Easy identification of scale tones on all instruments</li>
+         </ul>
+         
+         <h2>Usage</h2>
+         <ol>
+            <li><strong>Select Scale</strong>: Choose a scale from the dropdown menu</li>
+            <li><strong>Choose Root Note</strong>: Select a root note from the list</li>
+            <li><strong>Display</strong>: Click "Show Scale" to visualize the scale</li>
+            <li><strong>Switch Instrument</strong>: Use the "Go to..." button to switch between Keyboard, Guitar, and Bass</li>
+            <li><strong>Random Mode</strong>: Click "Random Scale" to generate a random scale and root note</li>
+         </ol>
+      </dialog>
    </div>
 
    <script src="script.js"></script>

@@ -30,6 +30,11 @@ body::before {
         color: #dcdcdc;
     }
 
+    #containerVisualsButtonDiv{
+        display: flex;
+        justify-content: space-between;
+    }
+
     #svgContainer{
         width: 94vw;
         height:30vh;
@@ -37,15 +42,7 @@ body::before {
         margin-bottom: 3vh;
     }
 
-    #keyboardSVG{
-        height: 100%;
-        width: 100%;
-    }
-    #guitarSVG{
-        height: 100%;
-        width: 100%;
-    }
-    #bassSVG{
+    #guitarSVG,#bassSVG,#keyboardSVG{
         height: 100%;
         width: 100%;
     }
@@ -53,26 +50,14 @@ body::before {
     button{
         background-color: #8c5a30;
         color: #dcdcdc;
-        border: 1px solid #dcdcdc;
-    }
-    #showOrHideScaleButton, #randomScale, #modesButton, #switchSVG {
-        padding: 5px;
-        background-color: #8c5a30;
-        color: #dcdcdc;
         border: 2px solid #dcdcdc;
         border-radius: 20px;
-        transition: background-color 0.3s ease;
+        padding: 1vw;
     }
 
     #modesButton{
        width: 30vw;
        height: 40px;
-    }
-
-    #switchSVG{
-        padding: 1vw;
-        width: fit-content;
-        height: fit-content;
     }
 
     #scaleTextView {
@@ -86,6 +71,7 @@ body::before {
         margin-left: 3vw;
         margin-right: 3vw;
         box-sizing: content-box;
+        min-height:25px;
     }
     
     #showOrHideScaleButton, #randomScale{
@@ -137,6 +123,82 @@ body::before {
     }
     #selectedNotes{
         width: 30%;
+    }
+
+    #informationDialog {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 90vw;
+        height: 80vh;
+        max-width: 900px;
+        max-height: 700px;
+        border: 3px solid #dcdcdc;
+        border-radius: 20px;
+        background-color: rgb(70, 39, 0);
+        color: #dcdcdc;
+        padding: 30px;
+        z-index: 1000;
+        overflow: auto;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    #informationDialog::-webkit-scrollbar {
+        display: none;
+    }
+
+    #informationDialog::backdrop {
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    #closeIsnformationDialogButton {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background-color: transparent;
+        border: none;
+        color: #dcdcdc;
+        font-size: 28px;
+        cursor: pointer;
+        padding: 0;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #closeIsnformationDialogButton:hover {
+        color: #ffdf80;
+        text-shadow: 0 0 10px #ffdf80, 0 0 20px #ffdf80, 0 0 30px #ffdf80;
+    }
+
+    #informationDialog h1 {
+        font-size: 24px;
+        margin-top: 0;
+        margin-bottom: 20px;
+        padding-right: 40px;
+    }
+
+    #informationDialog h2 {
+        font-size: 18px;
+        margin-top: 20px;
+        margin-bottom: 10px;
+    }
+
+    #informationDialog p {
+        margin: 10px 0;
+    }
+
+    #informationDialog ul, #informationDialog ol {
+        margin: 10px 0;
+        padding-left: 20px;
+    }
+
+    #informationDialog li {
+        margin: 5px 0;
     }
 }
 /* Desktop */
