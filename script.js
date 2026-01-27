@@ -534,10 +534,14 @@ class ScaleView {
         let scaleStringArray = this.scale.getScaleString();
         this.scale.scaleNotes.forEach(scaleNote => {
             let noteSpan = document.createElement('span');
-            noteSpan.innerText = scaleStringArray[i];
+            let noteString = scaleStringArray[i]
+            noteSpan.innerText = noteString;
             noteSpan.classList.add("notesAsChars")
             noteSpan.style.backgroundColor = this.noteColorMap.get(scaleNote.noteString);
-            noteSpan.addEventListener("click", () => this.highlightChord(scaleNote))
+            if (!this.scale.scaleNameString.includes('Pentatonic')) {
+                noteSpan.title = noteString + " " + scaleNote.chordType + " chord: " + scaleNote.harmonicString + ", " + scaleNote.chordNotes.map(note => note.harmonicString).join(", ");
+                noteSpan.addEventListener("click", () => this.highlightChord(scaleNote))
+            }
             this.scaleTextView.appendChild(noteSpan);
             i++;
         });
