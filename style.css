@@ -79,6 +79,7 @@ body::before {
         height: 40px;
         margin: 5vw;
         margin-bottom: 0;
+        padding: 0;
     }
     #randomScale{
         margin-top: 2vw;
