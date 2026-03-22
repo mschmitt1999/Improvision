@@ -154,7 +154,7 @@ body::before {
         background-color: rgba(0, 0, 0, 0.5);
     }
 
-    #closeIsnformationDialogButton {
+    #closeInformationDialogButton {
         position: absolute;
         top: 15px;
         right: 15px;
@@ -171,7 +171,7 @@ body::before {
         justify-content: center;
     }
 
-    #closeIsnformationDialogButton:hover {
+    #closeInformationDialogButton:hover {
         color: #ffdf80;
         text-shadow: 0 0 10px #ffdf80, 0 0 20px #ffdf80, 0 0 30px #ffdf80;
     }
@@ -200,6 +200,10 @@ body::before {
 
     #informationDialog li {
         margin: 5px 0;
+    }
+
+    .notesAsChars:active:after{
+        content:attr(title);
     }
 }
 /* Desktop */
