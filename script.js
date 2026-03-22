@@ -383,7 +383,7 @@ class ScaleView {
         // Dialog setup
         const dialog = document.getElementById("informationDialog");
         const showButton = document.getElementById("showInformationDialogButton");
-        const closeButton = document.getElementById("closeIsnformationDialogButton");
+        const closeButton = document.getElementById("closeInformationDialogButton");
         showButton.addEventListener("click", () => {
         dialog.showModal();
         });
@@ -539,7 +539,7 @@ class ScaleView {
             noteSpan.classList.add("notesAsChars")
             noteSpan.style.backgroundColor = this.noteColorMap.get(scaleNote.noteString);
             if (!this.scale.scaleNameString.includes('Pentatonic')) {
-                noteSpan.title = noteString + " " + scaleNote.chordType + " chord: " + scaleNote.harmonicString + ", " + scaleNote.chordNotes.map(note => note.harmonicString).join(", ");
+                noteSpan.title = scaleNote.chordType + " chord: " + scaleNote.harmonicString + ", " + scaleNote.chordNotes.map(note => note.harmonicString).join(", ");
                 noteSpan.addEventListener("click", () => this.highlightChord(scaleNote))
             }
             this.scaleTextView.appendChild(noteSpan);
